@@ -9,7 +9,7 @@ Allows you to render a provided PDF file. Based on [pdf_previewer
 First, add  *flutter_pdf_viewer*  as a dependency in [your pubspec.yaml file](https://flutter.io/platform-plugins/).
 
 ```
-pdf_previewer: any
+flutter_pdf_viewer: any
 ```
 ## Android
 No permissions required. Uses application cache directory.
