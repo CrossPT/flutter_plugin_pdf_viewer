@@ -1,0 +1,118 @@
+#import "FlutterPdfViewerPlugin.h"
+
+static NSString* const kDirectory = @"FlutterPdfViewer";
+static NSString* const kOutputBaseName = @"page";
+static NSString* const kFilePath = @"file:///";
+
+@implementation FlutterPdfViewerPlugin
++ (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
+  FlutterMethodChannel* channel = [FlutterMethodChannel
+      methodChannelWithName:@"flutter_pdf_viewer"
+            binaryMessenger:[registrar messenger]];
+  FlutterPdfViewerPlugin* instance = [[FlutterPdfViewerPlugin alloc] init];
+  [registrar addMethodCallDelegate:instance channel:channel];
+}
+
++ (void)clearCache{
+     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+         NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+         NSString *documentsDirectory = [paths objectAtIndex:0];
+         NSString *filePathAndDirectory = [documentsDirectory stringByAppendingPathComponent:kDirectory];
+         NSError *error;
+         BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:filePathAndDirectory];
+         if (fileExists && ![[NSFileManager defaultManager] removeItemAtPath:filePathAndDirectory error:&error]){
+             NSLog(@"FlutterPdfViewer: Error while removing the cache: %@", error);
+         }else{
+             NSLog(@"FlutterPdfViewer: Cache removed with success.");
+         }
+     });
+}
+
+- (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
+  dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+          if ([@"getPage" isEqualToString:call.method]) {
+              size_t pageNumber = (size_t)[call.arguments[@"pageNumber"] intValue];
+              NSString * filePath = call.arguments[@"filePath"];
+              result([self getPage:filePath ofPage:pageNumber);
+          } else if ([@"getNumberOfPages" isEqualToString:call.method]) {
+              NSString * filePath = call.arguments[@"filePath"];
+              result([self getNumberOfPages:filePath]);
+          }
+          else {
+              result(FlutterMethodNotImplemented);
+          }
+      });
+}
+
+-(NSString *)getNumberOfPages:(NSString *)url
+{
+    NSURL * sourcePDFUrl;
+    if([url containsString:kFilePath]){
+        sourcePDFUrl = [NSURL URLWithString:url];
+    }else{
+        sourcePDFUrl = [NSURL URLWithString:[kFilePath stringByAppendingString:url]];
+    }
+    CGPDFDocumentRef SourcePDFDocument = CGPDFDocumentCreateWithURL((__bridge CFURLRef)sourcePDFUrl);
+    size_t numberOfPages = CGPDFDocumentGetNumberOfPages(SourcePDFDocument);
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentsDirectory = [paths objectAtIndex:0];
+    NSString *filePathAndDirectory = [documentsDirectory stringByAppendingPathComponent:kDirectory];
+    NSError *error;
+
+    if (![[NSFileManager defaultManager] createDirectoryAtPath:filePathAndDirectory
+                                   withIntermediateDirectories:YES
+                                                    attributes:nil
+                                                         error:&error])
+    {
+        NSLog(@"Create directory error: %@", error);
+        return nil;
+    }
+    return [NSString stringWithFormat:@"%zd", numberOfPages];
+}
+
+-(NSString*)getPDFPreview:(NSString *)url ofPage:(size_t)pageNumber
+{
+    NSURL * sourcePDFUrl;
+    if([url containsString:kFilePath]){
+        sourcePDFUrl = [NSURL URLWithString:url];
+    }else{
+        sourcePDFUrl = [NSURL URLWithString:[kFilePath stringByAppendingString:url]];
+    }
+    CGPDFDocumentRef SourcePDFDocument = CGPDFDocumentCreateWithURL((__bridge CFURLRef)sourcePDFUrl);
+    size_t numberOfPages = CGPDFDocumentGetNumberOfPages(SourcePDFDocument);
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentsDirectory = [paths objectAtIndex:0];
+    NSString *filePathAndDirectory = [documentsDirectory stringByAppendingPathComponent:kDirectory];
+    NSError *error;
+
+    if (pageNumber > numberOfPages) {
+        pageNumber = numberOfPages;
+    }
+
+    if (![[NSFileManager defaultManager] createDirectoryAtPath:filePathAndDirectory
+                                   withIntermediateDirectories:YES
+                                                    attributes:nil
+                                                         error:&error])
+    {
+        NSLog(@"Create directory error: %@", error);
+        return nil;
+    }
+    CGPDFPageRef SourcePDFPage = CGPDFDocumentGetPage(SourcePDFDocument, pageNumber);
+    // CoreGraphics: MUST retain the Page-Reference manually
+    CGPDFPageRetain(SourcePDFPage);
+    NSString *relativeOutputFilePath = [NSString stringWithFormat:@"%@/%@%d.png", kDirectory, kOutputBaseName, (int)pageNumber];
+    NSString *imageFilePath = [documentsDirectory stringByAppendingPathComponent:relativeOutputFilePath];
+    CGRect sourceRect = CGPDFPageGetBoxRect(SourcePDFPage, kCGPDFMediaBox);
+    UIGraphicsBeginPDFContextToFile(imageFilePath, sourceRect, nil);
+    UIGraphicsBeginImageContext(CGSizeMake(sourceRect.size.width,sourceRect.size.height));
+    CGContextRef currentContext = UIGraphicsGetCurrentContext();
+    CGContextTranslateCTM(currentContext, 0.0, sourceRect.size.height); //596,842 //640×960,
+    CGContextScaleCTM(currentContext, 1.0, -1.0);
+    CGContextDrawPDFPage (currentContext, SourcePDFPage); // draws the page in the graphics context
+    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    [UIImagePNGRepresentation(image) writeToFile: imageFilePath atomically:YES];
+    return imageFilePath;
+}
+
+@end

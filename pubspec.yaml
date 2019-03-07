@@ -1,0 +1,26 @@
+name: flutter_pdf_viewer
+description: Allows you to generate PNG's of specified pages from a provided PDF file source.
+version: 0.0.1
+author: Tiago Ribeiro <tiagopribeiro.1992@gmail.com>
+homepage: https://github.com/CrossPT/flutter_pdf_viewer
+
+environment:
+  sdk: ">=2.1.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  meta: any
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+# For information on the generic Dart part of this file, see the
+# following page: https://www.dartlang.org/tools/pub/pubspec
+
+# The following section is specific to Flutter.
+flutter:
+  plugin:
+    androidPackage: pt.tribeiro.flutter_pdf_viewer
+    pluginClass: FlutterPdfViewerPlugin
