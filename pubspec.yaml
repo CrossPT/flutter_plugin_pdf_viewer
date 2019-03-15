@@ -14,15 +14,6 @@ dependencies:
   material_design_icons_flutter: ^3.2.3595
   numberpicker: ^1.0.0
 
-
-dev_dependencies:
-  flutter_test:
-    sdk: flutter
-
-# For information on the generic Dart part of this file, see the
-# following page: https://www.dartlang.org/tools/pub/pubspec
-
-# The following section is specific to Flutter.
 flutter:
   plugin:
     androidPackage: pt.tribeiro.flutter_plugin_pdf_viewer

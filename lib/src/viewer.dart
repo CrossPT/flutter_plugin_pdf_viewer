@@ -39,7 +39,7 @@ class _PDFViewerState extends State<PDFViewer> {
   }
 
   @override
-  void didUpdateWidget (PDFViewer oldWidget) {
+  void didUpdateWidget(PDFViewer oldWidget) {
     super.didUpdateWidget(oldWidget);
     _loadPage();
   }
@@ -48,8 +48,7 @@ class _PDFViewerState extends State<PDFViewer> {
     if (_oldPage == 0) {
       _page = await widget.document.get(page: _pageNumber);
       setState(() => _isLoading = false);
-    } 
-    else if (_oldPage != _pageNumber) {
+    } else if (_oldPage != _pageNumber) {
       _oldPage = _pageNumber;
       setState(() => _isLoading = true);
       _page = await widget.document.get(page: _pageNumber);
