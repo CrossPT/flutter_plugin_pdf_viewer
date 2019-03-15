@@ -1,31 +1,16 @@
-#import "FlutterPdfViewerPlugin.h"
+#import "FlutterPluginPdfViewerPlugin.h"
 
-static NSString* const kDirectory = @"FlutterPdfViewer";
+static NSString* const kDirectory = @"FlutterPluginPdfViewer";
 static NSString* const kOutputBaseName = @"page";
 static NSString* const kFilePath = @"file:///";
 
-@implementation FlutterPdfViewerPlugin
+@implementation FlutterPluginPdfViewerPlugin
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
   FlutterMethodChannel* channel = [FlutterMethodChannel
-      methodChannelWithName:@"flutter_pdf_viewer"
+      methodChannelWithName:@"flutter_plugin_pdf_viewer"
             binaryMessenger:[registrar messenger]];
   FlutterPdfViewerPlugin* instance = [[FlutterPdfViewerPlugin alloc] init];
   [registrar addMethodCallDelegate:instance channel:channel];
-}
-
-+ (void)clearCache{
-     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-         NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-         NSString *documentsDirectory = [paths objectAtIndex:0];
-         NSString *filePathAndDirectory = [documentsDirectory stringByAppendingPathComponent:kDirectory];
-         NSError *error;
-         BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:filePathAndDirectory];
-         if (fileExists && ![[NSFileManager defaultManager] removeItemAtPath:filePathAndDirectory error:&error]){
-             NSLog(@"FlutterPdfViewer: Error while removing the cache: %@", error);
-         }else{
-             NSLog(@"FlutterPdfViewer: Cache removed with success.");
-         }
-     });
 }
 
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {

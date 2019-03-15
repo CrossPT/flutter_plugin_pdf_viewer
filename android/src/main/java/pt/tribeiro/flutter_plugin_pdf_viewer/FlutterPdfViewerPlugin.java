@@ -1,4 +1,4 @@
-package pt.tribeiro.flutter_pdf_viewer;
+package pt.tribeiro.flutter_plugin_pdf_viewer;
 
 import android.graphics.Bitmap;
 import android.graphics.pdf.PdfRenderer;
@@ -16,18 +16,18 @@ import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
 
 /**
- * FlutterPdfViewerPlugin
+ * FlutterPluginPdfViewerPlugin
  */
-public class FlutterPdfViewerPlugin implements MethodCallHandler {
+public class FlutterPluginPdfViewerPlugin implements MethodCallHandler {
     private static Registrar instance;
 
     /**
      * Plugin registration.
      */
     public static void registerWith(Registrar registrar) {
-        final MethodChannel channel = new MethodChannel(registrar.messenger(), "flutter_pdf_viewer");
+        final MethodChannel channel = new MethodChannel(registrar.messenger(), "flutter_plugin_pdf_viewer");
         instance = registrar;
-        channel.setMethodCallHandler(new FlutterPdfViewerPlugin());
+        channel.setMethodCallHandler(new FlutterPluginPdfViewerPlugin());
     }
 
     @Override

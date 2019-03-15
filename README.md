@@ -39,7 +39,7 @@ PDFPage pageOne = await doc.get(1);
 List<PDFPage> pages = await doc.getAll();
 ```
 
-#### Alternative
+#### Pre-built viewer
 Use the pre-built PDF Viewer
 ```
 @override

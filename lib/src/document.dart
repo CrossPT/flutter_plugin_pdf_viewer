@@ -1,12 +1,12 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:flutter/services.dart';
-import 'package:flutter_pdf_viewer/src/page.dart';
+import 'package:flutter_plugin_pdf_viewer/src/page.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
 class PDFDocument {
   static const MethodChannel _channel =
-      const MethodChannel('flutter_pdf_viewer');
+      const MethodChannel('flutter_plugin_pdf_viewer');
 
   String _filePath;
   int count;
@@ -39,9 +39,13 @@ class PDFDocument {
     ByteData data = await rootBundle.load(asset);
     File f = File.fromRawPath(data.buffer.asUint8List());
     document._filePath = f.path;
-    var pageCount =
+    try {
+      var pageCount =
         await _channel.invokeMethod('getNumberOfPages', {'filePath': f.path});
-    document.count = document.count = int.parse(pageCount);
+      document.count = document.count = int.parse(pageCount);
+    } catch(e) {
+      throw Exception('Error reading PDF!');
+    }
     return document;
   }
 
