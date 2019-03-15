@@ -30,11 +30,28 @@ File file  = File('...');
 PDFDocument doc = await PDFDocument.fromFile(file);
 ```
 
-#### Get pages
+#### Load pages
 ```
 // Load specific page
 PDFPage pageOne = await doc.get(1);
 
 // Load all pages
 List<PDFPage> pages = await doc.getAll();
+```
+
+#### Alternative
+Use the pre-built PDF Viewer
+```
+@override
+  Widget build(BuildContext context) {
+    Scaffold(
+        appBar: AppBar(
+          title: const Text('FlutterPDFViewer'),
+        ),
+        body: Center(
+        child: _isLoading
+            ? Center(child: CircularProgressIndicator())
+            : PDFViewer(document: document)),
+    );
+  }
 ```

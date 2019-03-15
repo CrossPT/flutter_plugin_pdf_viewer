@@ -1,5 +1,5 @@
 name: flutter_pdf_viewer
-description: Allows you to generate PNG's of specified pages from a provided PDF file source.
+description: A cross platform plugin for handling PDF files.
 version: 0.0.1
 author: Tiago Ribeiro <tiagopribeiro.1992@gmail.com>
 homepage: https://github.com/CrossPT/flutter_pdf_viewer
@@ -10,7 +10,10 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  meta: any
+  flutter_cache_manager: any
+  material_design_icons_flutter: any
+  numberpicker: any
+
 
 dev_dependencies:
   flutter_test:
