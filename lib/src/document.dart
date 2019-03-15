@@ -11,39 +11,50 @@ class PDFDocument {
   String _filePath;
   int count;
 
+  /// Load a PDF File from a given File
+  ///
+  ///
   static Future<PDFDocument> fromFile(File f) async {
     PDFDocument document = PDFDocument();
     document._filePath = f.path;
-    var pageCount =
-        await _channel.invokeMethod('getNumberOfPages', {'filePath': f.path});
-    document.count = int.parse(pageCount);
+    try {
+      var pageCount =
+          await _channel.invokeMethod('getNumberOfPages', {'filePath': f.path});
+      document.count = document.count = int.parse(pageCount);
+    } catch (e) {
+      throw Exception('Error reading PDF!');
+    }
     return document;
   }
 
-  /// Load a PDF File from a given URL
-  ///
+  /// Load a PDF File from a given URL.
+  /// File is saved in cache
   ///
   static Future<PDFDocument> fromURL(String url) async {
-    // Download into cahce
+    // Download into cache
     File f = await DefaultCacheManager().getSingleFile(url);
     PDFDocument document = PDFDocument();
     document._filePath = f.path;
-    var pageCount =
-        await _channel.invokeMethod('getNumberOfPages', {'filePath': f.path});
-    document.count = int.parse(pageCount);
+    try {
+      var pageCount =
+          await _channel.invokeMethod('getNumberOfPages', {'filePath': f.path});
+      document.count = document.count = int.parse(pageCount);
+    } catch (e) {
+      throw Exception('Error reading PDF!');
+    }
     return document;
   }
 
+  /// Load a PDF File from assets folder
+  ///
+  ///
   static Future<PDFDocument> fromAsset(String asset) async {
     PDFDocument document = PDFDocument();
-    ByteData data = await rootBundle.load(asset);
-    File f = File.fromRawPath(data.buffer.asUint8List());
-    document._filePath = f.path;
     try {
       var pageCount =
-        await _channel.invokeMethod('getNumberOfPages', {'filePath': f.path});
+          await _channel.invokeMethod('getNumberOfPages', {'filePath': asset});
       document.count = document.count = int.parse(pageCount);
-    } catch(e) {
+    } catch (e) {
       throw Exception('Error reading PDF!');
     }
     return document;
@@ -62,6 +73,6 @@ class PDFDocument {
   /// Load all pages
   ///
   Future<List<dynamic>> getAll() async {
-    return [];
+    throw Exception("Not yet implemented");
   }
 }

@@ -29,15 +29,27 @@ class PDFViewer extends StatefulWidget {
 class _PDFViewerState extends State<PDFViewer> {
   bool _isLoading = true;
   int _pageNumber = 1;
-  int _oldPage = 1;
+  int _oldPage = 0;
   PDFPage _page;
 
-  _PDFViewerState() {
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _loadPage();
+  }
+
+  @override
+  void didUpdateWidget (PDFViewer oldWidget) {
+    super.didUpdateWidget(oldWidget);
     _loadPage();
   }
 
   _loadPage() async {
-    if (_oldPage != _pageNumber) {
+    if (_oldPage == 0) {
+      _page = await widget.document.get(page: _pageNumber);
+      setState(() => _isLoading = false);
+    } 
+    else if (_oldPage != _pageNumber) {
       _oldPage = _pageNumber;
       setState(() => _isLoading = true);
       _page = await widget.document.get(page: _pageNumber);
@@ -88,27 +100,6 @@ class _PDFViewerState extends State<PDFViewer> {
         _loadPage();
       }
     });
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _repaint();
-  }
-
-  @override
-  void didUpdateWidget(PDFViewer oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.document != widget.document) {
-      _repaint();
-    }
-  }
-
-  _repaint() {
-    _isLoading = true;
-    _oldPage = 0;
-    _pageNumber = 1;
-    setState(() {});
   }
 
   @override

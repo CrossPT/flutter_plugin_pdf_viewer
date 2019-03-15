@@ -1,12 +1,12 @@
-# flutter_pdf_viewer
+# flutter_plugin_pdf_viewer
 
-A cross platform plugin for handling PDF files.
+A flutter plugin for handling PDF files. Works on both Android & iOS
 
 ## Installation
 
-Add  *flutter_pdf_viewer*  as a dependency in [your pubspec.yaml file](https://flutter.io/platform-plugins/).
+Add  *flutter_plugin_pdf_viewer*  as a dependency in [your pubspec.yaml file](https://flutter.io/platform-plugins/).
 ```
-flutter_pdf_viewer: any
+flutter_plugin_pdf_viewer: any
 ```
 
 ## Android
@@ -15,7 +15,7 @@ No permissions required. Uses application cache directory.
 ## iOS
 No permissions required.
 
-### How-to
+## How-to
 
 #### Load PDF
 ```
@@ -33,10 +33,7 @@ PDFDocument doc = await PDFDocument.fromFile(file);
 #### Load pages
 ```
 // Load specific page
-PDFPage pageOne = await doc.get(1);
-
-// Load all pages
-List<PDFPage> pages = await doc.getAll();
+PDFPage pageOne = await doc.get(page: _number);
 ```
 
 #### Pre-built viewer
@@ -46,7 +43,7 @@ Use the pre-built PDF Viewer
   Widget build(BuildContext context) {
     Scaffold(
         appBar: AppBar(
-          title: const Text('FlutterPDFViewer'),
+          title: Text('Example'),
         ),
         body: Center(
         child: _isLoading
