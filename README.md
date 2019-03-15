@@ -52,3 +52,6 @@ Use the pre-built PDF Viewer
     );
   }
 ```
+
+This code produces the following view:
+![alt text](https://raw.githubusercontent.com/username/projectname/branch/path/to/img.png)
