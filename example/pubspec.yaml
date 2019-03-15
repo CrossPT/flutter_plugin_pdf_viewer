@@ -1,5 +1,5 @@
 name: flutter_pdf_viewer_example
-description: Demonstrates how to use the flutter_pdf_viewer plugin.
+description: Demonstrates how to use the flutter_plugin_pdf_viewer plugin.
 publish_to: 'none'
 
 environment:
@@ -17,7 +17,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  flutter_pdf_viewer:
+  flutter_plugin_pdf_viewer:
     path: ../
 
 # For information on the generic Dart part of this file, see the
