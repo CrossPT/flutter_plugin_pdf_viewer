@@ -54,4 +54,4 @@ Use the pre-built PDF Viewer
 ```
 
 This code produces the following view:
-![alt text](https://raw.githubusercontent.com/CrossPT/flutter_pdf_viewer/master/demo.png)
+![Image 1](https://raw.githubusercontent.com/CrossPT/flutter_pdf_viewer/master/demo.png)
