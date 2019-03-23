@@ -12,6 +12,7 @@ class PDFViewer extends StatefulWidget {
   final IndicatorPosition indicatorPosition;
   final bool showIndicator;
   final bool showPicker;
+  final bool showNavigation;
 
   PDFViewer(
       {Key key,
@@ -20,6 +21,7 @@ class PDFViewer extends StatefulWidget {
       this.indicatorBackground = Colors.black54,
       this.showIndicator = true,
       this.showPicker = true,
+      this.showNavigation = true,
       this.indicatorPosition = IndicatorPosition.topRight})
       : super(key: key);
 
@@ -121,7 +123,7 @@ class _PDFViewerState extends State<PDFViewer> {
             )
           : null,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: BottomAppBar(
+      bottomNavigationBar: widget.showNavigation ? BottomAppBar(
         child: new Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
@@ -174,7 +176,7 @@ class _PDFViewerState extends State<PDFViewer> {
             ),
           ],
         ),
-      ),
+      ) : Container(),
     );
   }
 }
