@@ -58,16 +58,10 @@ class _PDFViewerState extends State<PDFViewer> {
 
   Widget _drawIndicator() {
     Widget child = Container(
-        padding:
-            EdgeInsets.only(top: 4.0, left: 16.0, bottom: 4.0, right: 16.0),
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(4.0),
-            color: widget.indicatorBackground),
+        padding: EdgeInsets.only(top: 4.0, left: 16.0, bottom: 4.0, right: 16.0),
+        decoration: BoxDecoration(borderRadius: BorderRadius.circular(4.0), color: widget.indicatorBackground),
         child: Text("$_pageNumber/${widget.document.count}",
-            style: TextStyle(
-                color: widget.indicatorText,
-                fontSize: 16.0,
-                fontWeight: FontWeight.w400)));
+            style: TextStyle(color: widget.indicatorText, fontSize: 16.0, fontWeight: FontWeight.w400)));
 
     switch (widget.indicatorPosition) {
       case IndicatorPosition.topLeft:
@@ -107,7 +101,7 @@ class _PDFViewerState extends State<PDFViewer> {
       body: Stack(
         children: <Widget>[
           _isLoading ? Center(child: CircularProgressIndicator()) : _page,
-          _drawIndicator()
+          widget.showIndicator ? _drawIndicator() : Container()
         ],
       ),
       floatingActionButton: widget.showPicker
