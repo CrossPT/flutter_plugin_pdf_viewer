@@ -1,4 +1,4 @@
 #import <Flutter/Flutter.h>
 
-@interface FlutterPdfViewerPlugin : NSObject<FlutterPlugin>
+@interface FlutterPluginPdfViewerPlugin : NSObject<FlutterPlugin>
 @end

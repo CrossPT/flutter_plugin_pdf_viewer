@@ -4,7 +4,7 @@ static NSString* const kDirectory = @"FlutterPluginPdfViewer";
 static NSString* const kOutputBaseName = @"page";
 static NSString* const kFilePath = @"file:///";
 
-@implementation FlutterPdfViewerPlugin
+@implementation FlutterPluginPdfViewerPlugin
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
   FlutterMethodChannel* channel = [FlutterMethodChannel
       methodChannelWithName:@"flutter_plugin_pdf_viewer"
