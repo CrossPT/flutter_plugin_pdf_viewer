@@ -1,4 +1,4 @@
-#import "FlutterPluginPdfViewerPlugin.h"
+#import "FlutterPdfViewerPlugin.h"
 
 static NSString* const kDirectory = @"FlutterPluginPdfViewer";
 static NSString* const kOutputBaseName = @"page";
