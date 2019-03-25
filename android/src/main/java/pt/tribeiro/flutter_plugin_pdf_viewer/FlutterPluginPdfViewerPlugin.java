@@ -113,6 +113,7 @@ public class FlutterPluginPdfViewerPlugin implements MethodCallHandler {
                 renderer.close();
             }
         } catch (Exception ex) {
+            System.out.println(ex.getMessage());
             ex.printStackTrace();
         }
 

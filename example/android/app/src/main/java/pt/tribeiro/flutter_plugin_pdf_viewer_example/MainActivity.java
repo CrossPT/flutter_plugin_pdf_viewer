@@ -1,4 +1,4 @@
-package pt.tribeiro.flutter_pdf_viewer_example;
+package pt.tribeiro.flutter_plugin_pdf_viewer_example;
 
 import android.os.Bundle;
 import io.flutter.app.FlutterActivity;
