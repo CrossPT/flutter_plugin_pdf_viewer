@@ -9,7 +9,7 @@ static NSString* const kFilePath = @"file:///";
   FlutterMethodChannel* channel = [FlutterMethodChannel
       methodChannelWithName:@"flutter_plugin_pdf_viewer"
             binaryMessenger:[registrar messenger]];
-  FlutterPdfViewerPlugin* instance = [[FlutterPdfViewerPlugin alloc] init];
+  FlutterPluginPdfViewerPlugin* instance = [[FlutterPluginPdfViewerPlugin alloc] init];
   [registrar addMethodCallDelegate:instance channel:channel];
 }
 
