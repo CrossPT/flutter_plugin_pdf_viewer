@@ -63,7 +63,7 @@ class PDFDocument {
   /// Load specific page
   ///
   /// [page] defaults to `1` and must be equal or above it
-  Future<dynamic> get({int page = 1}) async {
+  Future<PDFPage> get({int page = 1}) async {
     assert(page > 0);
     var data = await _channel
         .invokeMethod('getPage', {'filePath': _filePath, 'pageNumber': page});
@@ -72,7 +72,7 @@ class PDFDocument {
 
   /// Load all pages
   ///
-  Future<List<dynamic>> getAll() async {
+  Future<List<PDFPage>> getAll() async {
     throw Exception("Not yet implemented");
   }
 }

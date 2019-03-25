@@ -117,7 +117,7 @@ class _PDFViewerState extends State<PDFViewer> {
             )
           : null,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: widget.showNavigation ? BottomAppBar(
+      bottomNavigationBar: (widget.showNavigation || widget.document.count > 1 ) ? BottomAppBar(
         child: new Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
