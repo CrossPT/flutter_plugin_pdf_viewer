@@ -9,7 +9,7 @@ static NSString* const kFilePath = @"file:///";
   FlutterMethodChannel* channel = [FlutterMethodChannel
       methodChannelWithName:@"flutter_plugin_pdf_viewer"
             binaryMessenger:[registrar messenger]];
-  FlutterPdfViewerPlugin* instance = [[FlutterPdfViewerPlugin alloc] init];
+  FlutterPluginPdfViewerPlugin* instance = [[FlutterPluginPdfViewerPlugin alloc] init];
   [registrar addMethodCallDelegate:instance channel:channel];
 }
 
@@ -18,7 +18,7 @@ static NSString* const kFilePath = @"file:///";
           if ([@"getPage" isEqualToString:call.method]) {
               size_t pageNumber = (size_t)[call.arguments[@"pageNumber"] intValue];
               NSString * filePath = call.arguments[@"filePath"];
-              result([self getPage:filePath ofPage:pageNumber);
+              result([self getPage:filePath ofPage:pageNumber]);
           } else if ([@"getNumberOfPages" isEqualToString:call.method]) {
               NSString * filePath = call.arguments[@"filePath"];
               result([self getNumberOfPages:filePath]);
@@ -55,7 +55,7 @@ static NSString* const kFilePath = @"file:///";
     return [NSString stringWithFormat:@"%zd", numberOfPages];
 }
 
--(NSString*)getPDFPreview:(NSString *)url ofPage:(size_t)pageNumber
+-(NSString*)getPage:(NSString *)url ofPage:(size_t)pageNumber
 {
     NSURL * sourcePDFUrl;
     if([url containsString:kFilePath]){
