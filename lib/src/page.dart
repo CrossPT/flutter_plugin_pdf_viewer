@@ -1,6 +1,6 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
+import 'package:flutter_plugin_pdf_viewer/src/zoomable.dart';
 
 class PDFPage extends StatefulWidget {
   final String imgPath;
@@ -36,6 +36,8 @@ class _PDFPageState extends State<PDFPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Image(image: provider);
+    return Zoomable(
+      child: Image(image: provider),
+    );
   }
 }
