@@ -1,6 +1,8 @@
 package pt.tribeiro.flutter_plugin_pdf_viewer;
 
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.pdf.PdfRenderer;
 import android.os.Environment;
 import android.os.ParcelFileDescriptor;
@@ -101,6 +103,9 @@ public class FlutterPluginPdfViewerPlugin implements MethodCallHandler {
             width = 2048;
             height = (int) (width / docRatio);
             Bitmap bitmap = Bitmap.createBitmap((int) width, (int) height, Bitmap.Config.ARGB_8888);
+
+            Canvas canvas = new Canvas(bitmap);
+            canvas.drawColor(Color.WHITE);
 
             page.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY);
 
