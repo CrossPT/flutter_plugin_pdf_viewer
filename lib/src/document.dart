@@ -86,6 +86,13 @@ class PDFDocument {
   /// Load all pages
   ///
   Future<List<PDFPage>> getAll() async {
-    throw Exception("Not yet implemented");
+    // TODO: Add isolates to handle this better
+    List<PDFPage> pages = List();
+    for (int i = 1; i < count; i++) {
+      var data = await _channel
+          .invokeMethod('getPage', {'filePath': _filePath, 'pageNumber': i});
+      pages.add(new PDFPage(data));
+    }
+    return pages;
   }
 }
