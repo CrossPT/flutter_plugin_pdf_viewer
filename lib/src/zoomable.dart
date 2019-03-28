@@ -6,10 +6,10 @@ class Zoomable extends StatefulWidget {
   final Widget child;
 
   @override
-  _ZoomableWidgetState createState() => _ZoomableWidgetState();
+  _ZoomableState createState() => _ZoomableState();
 }
 
-class _ZoomableWidgetState extends State<Zoomable> {
+class _ZoomableState extends State<Zoomable> {
   final GlobalKey _key = GlobalKey();
 
   double _zoom = 1.0;
@@ -39,8 +39,6 @@ class _ZoomableWidgetState extends State<Zoomable> {
   void _onScaleUpdate(ScaleUpdateDetails details) {
     Size boundarySize = _boundarySize;
 
-    Size _marginSize = Size(150.0, 150.0);
-
     _duration = const Duration(milliseconds: 150);
     _curve = Curves.easeOut;
 
@@ -61,8 +59,8 @@ class _ZoomableWidgetState extends State<Zoomable> {
     );
 
     Offset _marginOffset = _panRealOffset - _baseOffset;
-    double _widthFactor = sqrt(_marginOffset.dx.abs()) / _marginSize.width;
-    double _heightFactor = sqrt(_marginOffset.dy.abs()) / _marginSize.height;
+    double _widthFactor = sqrt(_marginOffset.dx.abs()) / 50.0;
+    double _heightFactor = sqrt(_marginOffset.dy.abs()) / 50.0;
     _marginOffset = Offset(
       _marginOffset.dx * _widthFactor * 2,
       _marginOffset.dy * _heightFactor * 2,
@@ -89,7 +87,7 @@ class _ZoomableWidgetState extends State<Zoomable> {
       _panOffset.dx.clamp(-boundarySize.width / 2, boundarySize.width / 2),
       _panOffset.dy.clamp(-boundarySize.height / 2, boundarySize.height / 2),
     );
-    // If zoom = 1.0, rollback to default scale
+    // If zoom is 100%, rollback to default scale
     if (_zoom == 1.0) {
       _clampedOffset = Offset.zero;
     }
@@ -133,10 +131,10 @@ class _ZoomableWidgetState extends State<Zoomable> {
     if (widget.child == null) return SizedBox();
 
     return CustomMultiChildLayout(
-      delegate: _ZoomableWidgetLayout(),
+      delegate: _ZoomableLayout(),
       children: <Widget>[
         LayoutId(
-          id: _ZoomableWidgetLayout.painter,
+          id: _ZoomableLayout.image,
           child: _ZoomableChild(
             duration: _duration,
             curve: _curve,
@@ -154,7 +152,7 @@ class _ZoomableWidgetState extends State<Zoomable> {
           ),
         ),
         LayoutId(
-          id: _ZoomableWidgetLayout.gestureContainer,
+          id: _ZoomableLayout.gestures,
           child: GestureDetector(
             child: Container(color: Color(0)),
             onScaleStart: _onScaleStart,
@@ -168,24 +166,24 @@ class _ZoomableWidgetState extends State<Zoomable> {
   }
 }
 
-class _ZoomableWidgetLayout extends MultiChildLayoutDelegate {
-  _ZoomableWidgetLayout();
+class _ZoomableLayout extends MultiChildLayoutDelegate {
+  _ZoomableLayout();
 
-  static final String gestureContainer = 'gesturecontainer';
-  static final String painter = 'painter';
+  static final String gestures = 'gestures';
+  static final String image = 'image';
 
   @override
   void performLayout(Size size) {
-    layoutChild(gestureContainer,
+    layoutChild(gestures,
         BoxConstraints.tightFor(width: size.width, height: size.height));
-    positionChild(gestureContainer, Offset.zero);
-    layoutChild(painter,
+    positionChild(gestures, Offset.zero);
+    layoutChild(image,
         BoxConstraints.tightFor(width: size.width, height: size.height));
-    positionChild(painter, Offset.zero);
+    positionChild(image, Offset.zero);
   }
 
   @override
-  bool shouldRelayout(_ZoomableWidgetLayout oldDelegate) => false;
+  bool shouldRelayout(_ZoomableLayout oldDelegate) => false;
 }
 
 class _ZoomableChild extends ImplicitlyAnimatedWidget {
@@ -210,14 +208,12 @@ class _ZoomableChildState extends AnimatedWidgetBaseState<_ZoomableChild> {
   Tween _zoom;
   Tween _panOffset;
   Tween _zoomOriginOffset;
-  Tween _rotation;
 
   @override
   void forEachTween(visitor) {
     _zoom = visitor(_zoom, widget.zoom, (dynamic value) => Tween(begin: value));
     _panOffset = visitor(
         _panOffset, widget.panOffset, (dynamic value) => Tween(begin: value));
-    _rotation = visitor(_rotation, 0.0, (dynamic value) => Tween(begin: value));
   }
 
   @override
@@ -230,10 +226,7 @@ class _ZoomableChildState extends AnimatedWidgetBaseState<_ZoomableChild> {
         ..translate(_panOffset.evaluate(animation).dx,
             _panOffset.evaluate(animation).dy)
         ..scale(_zoom.evaluate(animation), _zoom.evaluate(animation)),
-      child: Transform.rotate(
-        angle: _rotation.evaluate(animation),
-        child: widget.child,
-      ),
+      child: widget.child
     );
   }
 }

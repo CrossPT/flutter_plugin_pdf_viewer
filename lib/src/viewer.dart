@@ -47,6 +47,9 @@ class _PDFViewerState extends State<PDFViewer> {
   }
 
   _loadPage() async {
+    setState(() {
+     _isLoading = true; 
+    });
     if (_oldPage == 0) {
       _page = await widget.document.get(page: _pageNumber);
       setState(() => _isLoading = false);
