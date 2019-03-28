@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_plugin_pdf_viewer/flutter_plugin_pdf_viewer.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:numberpicker/numberpicker.dart';
 
 enum IndicatorPosition { topLeft, topRight, bottomLeft, bottomRight }
 
@@ -13,6 +11,7 @@ class PDFViewer extends StatefulWidget {
   final bool showIndicator;
   final bool showPicker;
   final bool showNavigation;
+  final Map<String, String> tooltips;
 
   PDFViewer(
       {Key key,
@@ -22,6 +21,13 @@ class PDFViewer extends StatefulWidget {
       this.showIndicator = true,
       this.showPicker = true,
       this.showNavigation = true,
+      this.tooltips = const {
+        'first': 'First',
+        'previous': 'Previous',
+        'next': 'Next',
+        'last': 'Last',
+        'jump': 'Jump to'
+      },
       this.indicatorPosition = IndicatorPosition.topRight})
       : super(key: key);
 
@@ -48,7 +54,7 @@ class _PDFViewerState extends State<PDFViewer> {
 
   _loadPage() async {
     setState(() {
-     _isLoading = true; 
+      _isLoading = true;
     });
     if (_oldPage == 0) {
       _page = await widget.document.get(page: _pageNumber);
@@ -89,21 +95,44 @@ class _PDFViewerState extends State<PDFViewer> {
   }
 
   _pickPage() {
-    showDialog<int>(
+    int value = _pageNumber;
+    showDialog<void>(
         context: context,
         builder: (BuildContext context) {
-          return NumberPickerDialog.integer(
-            title: Text("Pick a page"),
-            minValue: 1,
-            maxValue: widget.document.count,
-            initialIntegerValue: _pageNumber,
-          );
-        }).then((int value) {
-      if (value != null) {
-        _pageNumber = value;
-        _loadPage();
-      }
-    });
+          return StatefulBuilder(builder: (context, setState) {
+            return AlertDialog(
+              title: Text("Pick a page"),
+              content: new DropdownButton<int>(
+                value: value,
+                isExpanded: true,
+                items: List<int>.generate(widget.document.count, (i) => i + 1)
+                    .map((int val) {
+                  return new DropdownMenuItem<int>(
+                    value: val,
+                    child: new Text("$val"),
+                  );
+                }).toList(),
+                onChanged: (int val) {
+                  setState(() {
+                    value = val;
+                  });
+                },
+              ),
+              actions: <Widget>[
+                FlatButton(
+                  child: Text("OK"),
+                  onPressed: () {
+                    if (value != null) {
+                      Navigator.of(context).pop();
+                      _pageNumber = value;
+                      _loadPage();
+                    }
+                  },
+                ),
+              ],
+            );
+          });
+        });
   }
 
   @override
@@ -118,7 +147,7 @@ class _PDFViewerState extends State<PDFViewer> {
       floatingActionButton: widget.showPicker
           ? FloatingActionButton(
               elevation: 4.0,
-              tooltip: "Jump to",
+              tooltip: widget.tooltips['jump'],
               child: Icon(Icons.view_carousel),
               onPressed: () {
                 _pickPage();
@@ -133,8 +162,8 @@ class _PDFViewerState extends State<PDFViewer> {
                 children: <Widget>[
                   Expanded(
                     child: IconButton(
-                      icon: Icon(MdiIcons.pageFirst),
-                      tooltip: "First page",
+                      icon: Icon(Icons.first_page),
+                      tooltip: widget.tooltips['first'],
                       onPressed: () {
                         _pageNumber = 1;
                         _loadPage();
@@ -143,8 +172,8 @@ class _PDFViewerState extends State<PDFViewer> {
                   ),
                   Expanded(
                     child: IconButton(
-                      icon: Icon(MdiIcons.chevronLeft),
-                      tooltip: "Previous page",
+                      icon: Icon(Icons.chevron_left),
+                      tooltip: widget.tooltips['previous'],
                       onPressed: () {
                         _pageNumber--;
                         if (1 > _pageNumber) {
@@ -159,8 +188,8 @@ class _PDFViewerState extends State<PDFViewer> {
                       : SizedBox(width: 1),
                   Expanded(
                     child: IconButton(
-                      icon: Icon(MdiIcons.chevronRight),
-                      tooltip: "Next page",
+                      icon: Icon(Icons.chevron_right),
+                      tooltip: widget.tooltips['next'],
                       onPressed: () {
                         _pageNumber++;
                         if (widget.document.count < _pageNumber) {
@@ -172,8 +201,8 @@ class _PDFViewerState extends State<PDFViewer> {
                   ),
                   Expanded(
                     child: IconButton(
-                      icon: Icon(MdiIcons.pageLast),
-                      tooltip: "Last page",
+                      icon: Icon(Icons.last_page),
+                      tooltip: widget.tooltips['last'],
                       onPressed: () {
                         _pageNumber = widget.document.count;
                         _loadPage();

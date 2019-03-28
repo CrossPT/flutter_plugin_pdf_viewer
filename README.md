@@ -15,7 +15,7 @@ No permissions required. Uses application cache directory.
 ## iOS
 No permissions required.
 
-## How-to
+## How-to:
 
 #### Load PDF
 ```

@@ -11,8 +11,6 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_cache_manager: ^0.3.2
-  material_design_icons_flutter: ^3.2.3595
-  numberpicker: ^1.0.0
   path_provider: ^0.5.0
 
 flutter:
