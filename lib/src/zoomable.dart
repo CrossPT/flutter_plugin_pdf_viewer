@@ -21,9 +21,6 @@ class _ZoomableState extends State<Zoomable> {
   Size _childSize = Size.zero;
   Size _containerSize = Size.zero;
 
-  Duration _duration = const Duration(milliseconds: 100);
-  Curve _curve = Curves.easeOut;
-
   void _onScaleStart(ScaleStartDetails details) {
     if (_childSize == Size.zero) {
       final RenderBox renderbox = _key.currentContext.findRenderObject();
@@ -38,9 +35,6 @@ class _ZoomableState extends State<Zoomable> {
 
   void _onScaleUpdate(ScaleUpdateDetails details) {
     Size boundarySize = _boundarySize;
-
-    _duration = const Duration(milliseconds: 150);
-    _curve = Curves.easeOut;
 
     if (details.scale != 1.0) {
       setState(() {
@@ -136,8 +130,8 @@ class _ZoomableState extends State<Zoomable> {
         LayoutId(
           id: _ZoomableLayout.image,
           child: _ZoomableChild(
-            duration: _duration,
-            curve: _curve,
+            duration: Duration(microseconds: 100),
+            curve: Curves.easeInOut,
             zoom: _zoom,
             panOffset: _panOffset,
             child: LayoutBuilder(

@@ -86,7 +86,7 @@ class PDFDocument {
   /// Load all pages
   ///
   Future<List<PDFPage>> getAll() async {
-    // TODO: Add isolates to handle this better
+    // TODO: Wrap into isolates or use stream
     List<PDFPage> pages = List();
     for (int i = 1; i < count; i++) {
       var data = await _channel

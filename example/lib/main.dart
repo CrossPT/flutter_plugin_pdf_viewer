@@ -30,7 +30,7 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('FlutterPDFViewer'),
+          title: const Text('FlutterPluginPDFViewer'),
         ),
         body: Center(
             child: _isLoading

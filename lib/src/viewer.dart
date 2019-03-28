@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_plugin_pdf_viewer/flutter_plugin_pdf_viewer.dart';
+import 'package:numberpicker/numberpicker.dart';
 
 enum IndicatorPosition { topLeft, topRight, bottomLeft, bottomRight }
 
@@ -26,7 +27,8 @@ class PDFViewer extends StatefulWidget {
         'previous': 'Previous',
         'next': 'Next',
         'last': 'Last',
-        'jump': 'Jump to'
+        'jump': 'Jump to',
+        'pick': 'Pick a page'
       },
       this.indicatorPosition = IndicatorPosition.topRight})
       : super(key: key);
@@ -68,71 +70,51 @@ class _PDFViewerState extends State<PDFViewer> {
   }
 
   Widget _drawIndicator() {
-    Widget child = Container(
-        padding:
-            EdgeInsets.only(top: 4.0, left: 16.0, bottom: 4.0, right: 16.0),
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(4.0),
-            color: widget.indicatorBackground),
-        child: Text("$_pageNumber/${widget.document.count}",
-            style: TextStyle(
-                color: widget.indicatorText,
-                fontSize: 16.0,
-                fontWeight: FontWeight.w400)));
+    Widget child = GestureDetector(
+        onTap: _pickPage,
+        child: Container(
+            padding:
+                EdgeInsets.only(top: 4.0, left: 16.0, bottom: 4.0, right: 16.0),
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(4.0),
+                color: widget.indicatorBackground),
+            child: Text("$_pageNumber/${widget.document.count}",
+                style: TextStyle(
+                    color: widget.indicatorText,
+                    fontSize: 16.0,
+                    fontWeight: FontWeight.w400))));
 
     switch (widget.indicatorPosition) {
       case IndicatorPosition.topLeft:
-        return Positioned(top: 20, left: 20.0, child: child);
+        return Positioned(top: 20, left: 20, child: child);
       case IndicatorPosition.topRight:
-        return Positioned(top: 20, right: 20.0, child: child);
+        return Positioned(top: 20, right: 20, child: child);
       case IndicatorPosition.bottomLeft:
-        return Positioned(bottom: 20, left: 20.0, child: child);
+        return Positioned(bottom: 20, left: 20, child: child);
       case IndicatorPosition.bottomRight:
-        return Positioned(bottom: 20, right: 20.0, child: child);
+        return Positioned(bottom: 20, right: 20, child: child);
       default:
-        return Positioned(top: 20, right: 20.0, child: child);
+        return Positioned(top: 20, right: 20, child: child);
     }
   }
 
   _pickPage() {
-    int value = _pageNumber;
-    showDialog<void>(
+    showDialog<int>(
         context: context,
         builder: (BuildContext context) {
-          return StatefulBuilder(builder: (context, setState) {
-            return AlertDialog(
-              title: Text("Pick a page"),
-              content: new DropdownButton<int>(
-                value: value,
-                isExpanded: true,
-                items: List<int>.generate(widget.document.count, (i) => i + 1)
-                    .map((int val) {
-                  return new DropdownMenuItem<int>(
-                    value: val,
-                    child: new Text("$val"),
-                  );
-                }).toList(),
-                onChanged: (int val) {
-                  setState(() {
-                    value = val;
-                  });
-                },
-              ),
-              actions: <Widget>[
-                FlatButton(
-                  child: Text("OK"),
-                  onPressed: () {
-                    if (value != null) {
-                      Navigator.of(context).pop();
-                      _pageNumber = value;
-                      _loadPage();
-                    }
-                  },
-                ),
-              ],
-            );
-          });
-        });
+          return NumberPickerDialog.integer(
+            title: Text(widget.tooltips["pick"]),
+            minValue: 1,
+            cancelWidget: Container(),
+            maxValue: widget.document.count,
+            initialIntegerValue: _pageNumber,
+          );
+        }).then((int value) {
+      if (value != null) {
+        _pageNumber = value;
+        _loadPage();
+      }
+    });
   }
 
   @override
@@ -141,7 +123,9 @@ class _PDFViewerState extends State<PDFViewer> {
       body: Stack(
         children: <Widget>[
           _isLoading ? Center(child: CircularProgressIndicator()) : _page,
-          widget.showIndicator ? _drawIndicator() : Container()
+          (widget.showIndicator && !_isLoading)
+              ? _drawIndicator()
+              : Container(),
         ],
       ),
       floatingActionButton: widget.showPicker
