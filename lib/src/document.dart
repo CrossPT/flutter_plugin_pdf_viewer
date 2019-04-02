@@ -90,10 +90,10 @@ class PDFDocument {
   ///
   Observable<PDFPage> getAll(int pageCount) {
     _subject ??= PublishSubject();
-    Future.forEach<int>(List.generate(pageCount, (i) => i), (item) async {
+    Future.forEach<int>(List.generate(pageCount, (i) => i + 1), (item) async {
       final data = await _channel
           .invokeMethod('getPage', {'filePath': _filePath, 'pageNumber': item});
-      _subject.add(data);
+      _subject.add(PDFPage(data));
     });
     return _subject.stream;
   }
