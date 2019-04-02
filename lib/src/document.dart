@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'dart:io';
+
 import 'package:flutter/services.dart';
-import 'package:flutter_plugin_pdf_viewer/src/page.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:flutter_plugin_pdf_viewer/src/page.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:rxdart/rxdart.dart';
 
 class PDFDocument {
   static const MethodChannel _channel =
@@ -85,14 +87,12 @@ class PDFDocument {
 
   /// Load all pages
   ///
-  Future<List<PDFPage>> getAll() async {
-    // TODO: Wrap into isolates or use stream
-    List<PDFPage> pages = List();
-    for (int i = 1; i < count; i++) {
-      var data = await _channel
+  Observable<PDFPage> getAll() {
+    final stream = Future.forEach<PDFPage>(List(count), (i) async {
+      final data = await _channel
           .invokeMethod('getPage', {'filePath': _filePath, 'pageNumber': i});
-      pages.add(new PDFPage(data));
-    }
-    return pages;
+      return data;
+    }).asStream();
+    return stream;
   }
 }
