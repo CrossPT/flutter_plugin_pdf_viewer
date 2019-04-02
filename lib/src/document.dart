@@ -87,12 +87,11 @@ class PDFDocument {
 
   /// Load all pages
   ///
-  Observable<PDFPage> getAll() {
-    final stream = Future.forEach<PDFPage>(List(count), (i) async {
+  Observable<PDFPage> getAll(int pageCount) {
+    return Future.forEach<PDFPage>(List(pageCount), (i) async {
       final data = await _channel
           .invokeMethod('getPage', {'filePath': _filePath, 'pageNumber': i});
       return data;
     }).asStream();
-    return stream;
   }
 }
