@@ -199,4 +199,10 @@ class _PDFViewerState extends State<PDFViewer> {
           : Container(),
     );
   }
+
+  @override
+  void dispose() {
+    widget.document.dispose();
+    super.dispose();
+  }
 }

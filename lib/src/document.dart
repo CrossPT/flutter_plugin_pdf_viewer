@@ -13,6 +13,7 @@ class PDFDocument {
 
   String _filePath;
   int count;
+  PublishSubject<PDFPage> _subject;
 
   /// Load a PDF File from a given File
   ///
@@ -88,12 +89,16 @@ class PDFDocument {
   /// Load all pages
   ///
   Observable<PDFPage> getAll(int pageCount) {
-    return Future.forEach<PDFPage>(
-        List.generate(pageCount, (index) => PDFPage("${index + 1}")),
-        (fakePAge) async {
-      final data = await _channel.invokeMethod('getPage',
-          {'filePath': _filePath, 'pageNumber': int.parse(fakePAge.imgPath)});
-      return data;
-    }).asStream();
+    _subject ??= PublishSubject();
+    Future.forEach<int>(List.generate(pageCount, (i) => i), (item) async {
+      final data = await _channel
+          .invokeMethod('getPage', {'filePath': _filePath, 'pageNumber': item});
+      _subject.add(data);
+    });
+    return _subject.stream;
+  }
+
+  dispose() {
+    _subject?.close();
   }
 }
