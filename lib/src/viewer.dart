@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_plugin_pdf_viewer/flutter_plugin_pdf_viewer.dart';
 import 'package:numberpicker/numberpicker.dart';
+import 'tooltip.dart';
 
 enum IndicatorPosition { topLeft, topRight, bottomLeft, bottomRight }
 
@@ -12,7 +13,7 @@ class PDFViewer extends StatefulWidget {
   final bool showIndicator;
   final bool showPicker;
   final bool showNavigation;
-  final Map<String, String> tooltips;
+  final PDFViewerTooltip tooltip;
 
   PDFViewer(
       {Key key,
@@ -22,14 +23,7 @@ class PDFViewer extends StatefulWidget {
       this.showIndicator = true,
       this.showPicker = true,
       this.showNavigation = true,
-      this.tooltips = const {
-        'first': 'First',
-        'previous': 'Previous',
-        'next': 'Next',
-        'last': 'Last',
-        'jump': 'Jump to',
-        'pick': 'Pick a page'
-      },
+      this.tooltip = const PDFViewerTooltip(),
       this.indicatorPosition = IndicatorPosition.topRight})
       : super(key: key);
 
@@ -103,7 +97,7 @@ class _PDFViewerState extends State<PDFViewer> {
         context: context,
         builder: (BuildContext context) {
           return NumberPickerDialog.integer(
-            title: Text(widget.tooltips["pick"]),
+            title: Text(widget.tooltip.pick),
             minValue: 1,
             cancelWidget: Container(),
             maxValue: widget.document.count,
@@ -131,7 +125,7 @@ class _PDFViewerState extends State<PDFViewer> {
       floatingActionButton: widget.showPicker
           ? FloatingActionButton(
               elevation: 4.0,
-              tooltip: widget.tooltips['jump'],
+              tooltip: widget.tooltip.jump,
               child: Icon(Icons.view_carousel),
               onPressed: () {
                 _pickPage();
@@ -147,7 +141,7 @@ class _PDFViewerState extends State<PDFViewer> {
                   Expanded(
                     child: IconButton(
                       icon: Icon(Icons.first_page),
-                      tooltip: widget.tooltips['first'],
+                      tooltip: widget.tooltip.first,
                       onPressed: () {
                         _pageNumber = 1;
                         _loadPage();
@@ -157,7 +151,7 @@ class _PDFViewerState extends State<PDFViewer> {
                   Expanded(
                     child: IconButton(
                       icon: Icon(Icons.chevron_left),
-                      tooltip: widget.tooltips['previous'],
+                      tooltip: widget.tooltip.previous,
                       onPressed: () {
                         _pageNumber--;
                         if (1 > _pageNumber) {
@@ -173,7 +167,7 @@ class _PDFViewerState extends State<PDFViewer> {
                   Expanded(
                     child: IconButton(
                       icon: Icon(Icons.chevron_right),
-                      tooltip: widget.tooltips['next'],
+                      tooltip: widget.tooltip.next,
                       onPressed: () {
                         _pageNumber++;
                         if (widget.document.count < _pageNumber) {
@@ -186,7 +180,7 @@ class _PDFViewerState extends State<PDFViewer> {
                   Expanded(
                     child: IconButton(
                       icon: Icon(Icons.last_page),
-                      tooltip: widget.tooltips['last'],
+                      tooltip: widget.tooltip.last,
                       onPressed: () {
                         _pageNumber = widget.document.count;
                         _loadPage();

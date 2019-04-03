@@ -88,10 +88,14 @@ static NSString* const kFilePath = @"file:///";
     NSString *relativeOutputFilePath = [NSString stringWithFormat:@"%@/%@%d.png", kDirectory, kOutputBaseName, (int)pageNumber];
     NSString *imageFilePath = [documentsDirectory stringByAppendingPathComponent:relativeOutputFilePath];
     CGRect sourceRect = CGPDFPageGetBoxRect(SourcePDFPage, kCGPDFMediaBox);
+    CGFloat docRatio = sourceRect.size.width / sourceRect.size.height;
+    int width = 2048;
+    int height = (int) ceil(width/docRatio);
     UIGraphicsBeginPDFContextToFile(imageFilePath, sourceRect, nil);
-    UIGraphicsBeginImageContext(CGSizeMake(sourceRect.size.width,sourceRect.size.height));
+    UIGraphicsBeginImageContext(CGSizeMake(width, height));
     CGContextRef currentContext = UIGraphicsGetCurrentContext();
-    CGContextTranslateCTM(currentContext, 0.0, sourceRect.size.height); //596,842 //640×960,
+    CGContextSetFillColorWithColor(currentContext, [UIColor whiteColor].CGColor);
+    CGContextTranslateCTM(currentContext, 0.0, height);
     CGContextScaleCTM(currentContext, 1.0, -1.0);
     CGContextDrawPDFPage (currentContext, SourcePDFPage); // draws the page in the graphics context
     UIImage *image = UIGraphicsGetImageFromCurrentImageContext();

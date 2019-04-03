@@ -166,7 +166,9 @@ class _PDFPageState extends State<PDFPage> {
                 _containerSize =
                     Size(constraints.maxWidth, constraints.maxHeight);
                 return Center(
-                  child: Container(key: _key, child: Image(image: provider)),
+                  child: Container(
+                      key: _key,
+                      child: Image(image: provider)),
                 );
               },
             ),
@@ -241,11 +243,11 @@ class _ZoomableChildState extends AnimatedWidgetBaseState<_ZoomableChild> {
   Widget build(BuildContext context) {
     return Transform(
         alignment: Alignment.center,
-        origin: Offset(-_offset.evaluate(animation).dx,
-            -_offset.evaluate(animation).dy),
+        origin: Offset(
+            -_offset.evaluate(animation).dx, -_offset.evaluate(animation).dy),
         transform: Matrix4.identity()
-          ..translate(_offset.evaluate(animation).dx,
-              _offset.evaluate(animation).dy)
+          ..translate(
+              _offset.evaluate(animation).dx, _offset.evaluate(animation).dy)
           ..scale(_zoom.evaluate(animation), _zoom.evaluate(animation)),
         child: widget.child);
   }

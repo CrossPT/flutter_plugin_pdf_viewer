@@ -19,9 +19,9 @@ class _MyAppState extends State<MyApp> {
   }
 
   loadDocument() async {
-    document = await PDFDocument.fromAsset('assets/sample.pdf');
-    /*document = await PDFDocument.fromURL(
-        "http://www.africau.edu/images/default/sample.pdf");*/
+    //document = await PDFDocument.fromAsset('assets/sample.pdf');
+    document = await PDFDocument.fromURL(
+        "http://www.africau.edu/images/default/sample.pdf");
     setState(() => _isLoading = false);
   }
 
