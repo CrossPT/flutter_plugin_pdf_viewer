@@ -61,10 +61,16 @@ This code produces the following view:
 
 ---
 
+## TODO
+
+* Replace PDFRenderer with PDFium to allow password-protected files
+
+---
+
 #### Third-party packages used
 
 | Name | Description  |
 |-|-|
-| path_provider               | A Flutter plugin for finding commonly used locations on the filesystem. Supports iOS and Android.            |
-| flutter_cache_manager       | A CacheManager to download and cache files in the cache directory of the app. Various settings on how long to keep a file can be changed. |
-| numberpicker                | NumberPicker is a custom widget designed for choosing an integer or decimal number by scrolling spinners. |
+| [path_provider](https://pub.dartlang.org/packages/path_provider)               | A Flutter plugin for finding commonly used locations on the filesystem. Supports iOS and Android.            |
+| [flutter_cache_manager](https://pub.dartlang.org/packages/flutter_cache_manager)       | A CacheManager to download and cache files in the cache directory of the app. Various settings on how long to keep a file can be changed. |
+| [numberpicker](https://pub.dartlang.org/packages/numberpicker)                | NumberPicker is a custom widget designed for choosing an integer or decimal number by scrolling spinners. |
