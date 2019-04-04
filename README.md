@@ -64,8 +64,8 @@ This code produces the following view:
 ## TODO
 
 * Allow password-protected files
-* ~~ Refactor PDFDocument.getAll() method ~~
-* ~~ Increase page resolution ~~
+* ~~Refactor PDFDocument.getAll() method~~
+* ~~Increase page resolution~~
 * Add swipe to change page
 
 ---
