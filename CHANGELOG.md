@@ -1,8 +1,9 @@
 ## 1.0.4
 
-- Refactored PDFdocument.getAllPages() method (thanks @...)
+- Refactored PDFdocument.getAllPages() method (Thanks for @SergioBernal8 for PR )
 - Added white background to page (iOS)
-- Changed page render in iOS to 300 dpi instead of the default 72 dpi
+- Changed page resolution in iOS to 300 dpi
+- Moved tooltips to a proper class
 
 ## 1.0.3
 

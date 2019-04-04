@@ -63,7 +63,10 @@ This code produces the following view:
 
 ## TODO
 
-* Replace PDFRenderer with PDFium to allow password-protected files
+* Allow password-protected files
+* ~~ Refactor PDFDocument.getAll() method ~~
+* ~~ Increase page resolution ~~
+* Add swipe to change page
 
 ---
 
