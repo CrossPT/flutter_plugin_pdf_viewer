@@ -88,16 +88,26 @@ static NSString* const kFilePath = @"file:///";
     NSString *relativeOutputFilePath = [NSString stringWithFormat:@"%@/%@%d.png", kDirectory, kOutputBaseName, (int)pageNumber];
     NSString *imageFilePath = [documentsDirectory stringByAppendingPathComponent:relativeOutputFilePath];
     CGRect sourceRect = CGPDFPageGetBoxRect(SourcePDFPage, kCGPDFMediaBox);
-    CGFloat docRatio = sourceRect.size.width / sourceRect.size.height;
-    int width = 2048;
-    int height = (int) ceil(width/docRatio);
     UIGraphicsBeginPDFContextToFile(imageFilePath, sourceRect, nil);
+    // Calculate resolution
+    // Set DPI to 300
+    CGFloat dpi = 300.0 / 72.0;
+    CGFloat width = sourceRect.size.width * dpi;
+    CGFloat height = sourceRect.size.height * dpi;
+
+
     UIGraphicsBeginImageContext(CGSizeMake(width, height));
+    // Fill Background
     CGContextRef currentContext = UIGraphicsGetCurrentContext();
-    CGContextSetFillColorWithColor(currentContext, [UIColor whiteColor].CGColor);
+    CGContextSetInterpolationQuality(currentContext, kCGInterpolationHigh);
+    CGContextSetRGBFillColor(currentContext, 1.0f, 1.0f, 1.0f, 1.0f);
+    CGContextFillRect(currentContext, CGContextGetClipBoundingBox(currentContext));
     CGContextTranslateCTM(currentContext, 0.0, height);
-    CGContextScaleCTM(currentContext, 1.0, -1.0);
-    CGContextDrawPDFPage (currentContext, SourcePDFPage); // draws the page in the graphics context
+    CGContextScaleCTM(currentContext, dpi, -dpi);
+    CGContextSaveGState(currentContext);
+     // draws the page in the graphics context
+    CGContextDrawPDFPage (currentContext, SourcePDFPage);
+    CGContextRestoreGState(currentContext);
     UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
     [UIImagePNGRepresentation(image) writeToFile: imageFilePath atomically:YES];
