@@ -28,6 +28,7 @@ class _PDFPageState extends State<PDFPage> {
   }
 
   _repaint() {
+    imageCache.clear();
     provider = FileImage(File(widget.imgPath));
     final resolver = provider.resolve(createLocalImageConfiguration(context));
     resolver.addListener((imgInfo, alreadyPainted) {
