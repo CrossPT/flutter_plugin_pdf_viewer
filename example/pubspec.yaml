@@ -24,3 +24,4 @@ flutter:
   uses-material-design: true
   assets:
     - assets/sample.pdf
+    - assets/sample2.pdf
