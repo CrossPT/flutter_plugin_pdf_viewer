@@ -39,12 +39,18 @@ class _PDFViewerState extends State<PDFViewer> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    _oldPage = 0;
+    _pageNumber = 1;
+    _isLoading = true;
     _loadPage();
   }
 
   @override
   void didUpdateWidget(PDFViewer oldWidget) {
     super.didUpdateWidget(oldWidget);
+    _oldPage = 0;
+    _pageNumber = 1;
+    _isLoading = true;
     _loadPage();
   }
 
