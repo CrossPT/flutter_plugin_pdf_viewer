@@ -94,12 +94,12 @@ static NSString* const kFilePath = @"file:///";
     CGFloat dpi = 300.0 / 72.0;
     CGFloat width = sourceRect.size.width * dpi;
     CGFloat height = sourceRect.size.height * dpi;
-
-
     UIGraphicsBeginImageContext(CGSizeMake(width, height));
     // Fill Background
     CGContextRef currentContext = UIGraphicsGetCurrentContext();
+    // Change interpolation settings
     CGContextSetInterpolationQuality(currentContext, kCGInterpolationHigh);
+    // Fill background with white color
     CGContextSetRGBFillColor(currentContext, 1.0f, 1.0f, 1.0f, 1.0f);
     CGContextFillRect(currentContext, CGContextGetClipBoundingBox(currentContext));
     CGContextTranslateCTM(currentContext, 0.0, height);
