@@ -20,19 +20,19 @@ class _MyAppState extends State<MyApp> {
 
   loadDocument() async {
     document = await PDFDocument.fromAsset('assets/sample.pdf');
-   
+
     setState(() => _isLoading = false);
   }
 
   changePDF(value) async {
     setState(() => _isLoading = true);
     if (value == 1) {
-    document = await PDFDocument.fromAsset('assets/sample2.pdf');
+      document = await PDFDocument.fromAsset('assets/sample2.pdf');
     } else if (value == 2) {
-    document = await PDFDocument.fromURL(
-        "http://conorlastowka.com/book/CitationNeededBook-Sample.pdf");   
+      document = await PDFDocument.fromURL(
+          "http://conorlastowka.com/book/CitationNeededBook-Sample.pdf");
     } else {
-    document = await PDFDocument.fromAsset('assets/sample.pdf');
+      document = await PDFDocument.fromAsset('assets/sample.pdf');
     }
     setState(() => _isLoading = false);
   }
@@ -57,7 +57,7 @@ class _MyAppState extends State<MyApp> {
                   changePDF(2);
                 },
               ),
-                ListTile(
+              ListTile(
                 title: Text('Restore default'),
                 onTap: () {
                   changePDF(3);
@@ -72,7 +72,9 @@ class _MyAppState extends State<MyApp> {
         body: Center(
             child: _isLoading
                 ? Center(child: CircularProgressIndicator())
-                : PDFViewer(document: document, tooltip: PDFViewerTooltip(first:"Batatas"))),
+                : PDFViewer(
+                    document: document,
+                    tooltip: PDFViewerTooltip(first: "Batatas"))),
       ),
     );
   }

@@ -1,3 +1,8 @@
+## 1.0.5
+
+- Fixed bug in iOS where due to caching of Flutter ImageProvider when switching documents old pages would persist
+- Added more cases in example demo
+
 ## 1.0.4
 
 - Refactored PDFdocument.getAllPages() method (Thanks for @SergioBernal8 for PR )
