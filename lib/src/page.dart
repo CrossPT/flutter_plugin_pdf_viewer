@@ -38,13 +38,13 @@ class _PDFPageState extends State<PDFPage> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: null,
-      child: ZoomableWidget(
-        zoomSteps: 3,
-        minScale: 1.0,
-        panLimit: 0.8,
-        maxScale: 3.0,
-        child: Image(image: provider),
-    ));
+        decoration: null,
+        child: ZoomableWidget(
+          zoomSteps: 3,
+          minScale: 1.0,
+          panLimit: 0.8,
+          maxScale: 3.0,
+          child: Image(image: provider),
+        ));
   }
 }

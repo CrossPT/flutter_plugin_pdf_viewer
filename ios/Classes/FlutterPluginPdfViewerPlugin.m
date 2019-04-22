@@ -1,8 +1,8 @@
 #import "FlutterPluginPdfViewerPlugin.h"
 
-static NSString* const pluginDirectory = @"FlutterPluginPdfViewer";
-static NSString* const filePath = @"file:///";
-static NSString* fileName = @"";
+static NSString* const kDirectory = @"FlutterPluginPdfViewer";
+static NSString* const kFilePath = @"file:///";
+static NSString* kFileName = @"";
 
 @implementation FlutterPluginPdfViewerPlugin
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
@@ -18,112 +18,109 @@ static NSString* fileName = @"";
           if ([@"getPage" isEqualToString:call.method]) {
               size_t pageNumber = (size_t)[call.arguments[@"pageNumber"] intValue];
               NSString * filePath = call.arguments[@"filePath"];
-              result([self getPage:filePath page:pageNumber]);
-          } else if ([@"getpageCount" isEqualToString:call.method]) {
+              result([self getPage:filePath ofPage:pageNumber]);
+          } else if ([@"getNumberOfPages" isEqualToString:call.method]) {
               NSString * filePath = call.arguments[@"filePath"];
-              result([self getpageCount:filePath]);
+              result([self getNumberOfPages:filePath]);
           }
           else {
-              NSLog(@"[FlutterPluginPDFViewer] Trying to call an unknown method");
               result(FlutterMethodNotImplemented);
           }
       });
 }
 
--(NSString *)getpageCount:(NSString *)url
+-(NSString *)getNumberOfPages:(NSString *)url
 {
-    NSURL * pdfPathUrl;
-    // CGPDFDocumentCreateWithURL requires file:/// to be loaded
-    if([url containsString:filePath]){
-        pdfPathUrl = [NSURL URLWithString:url];
+    NSURL * sourcePDFUrl;
+    if([url containsString:kFilePath]){
+        sourcePDFUrl = [NSURL URLWithString:url];
     }else{
-        pdfPathUrl = [NSURL URLWithString:[filePath stringByAppendingString:url]];
+        sourcePDFUrl = [NSURL URLWithString:[kFilePath stringByAppendingString:url]];
     }
-    CGPDFDocumentRef pdfDoc = CGPDFDocumentCreateWithURL((__bridge CFURLRef)pdfPathUrl);
-    size_t pageCount = CGPDFDocumentGetpageCount(pdfDoc);
-    NSArray *getPath = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *documentsDirectory = [getPath objectAtIndex:0];
-    NSString *saveDirectory = [documentsDirectory stringByAppendingPathComponent:pluginDirectory];
+    CGPDFDocumentRef SourcePDFDocument = CGPDFDocumentCreateWithURL((__bridge CFURLRef)sourcePDFUrl);
+    size_t numberOfPages = CGPDFDocumentGetNumberOfPages(SourcePDFDocument);
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentsDirectory = [paths objectAtIndex:0];
+    NSString *filePathAndDirectory = [documentsDirectory stringByAppendingPathComponent:kDirectory];
     NSError *error;
 
     // Clear cache folder
-    if ([[NSFileManager defaultManager] fileExistsAtPath:saveDirectory]) {
+    if ([[NSFileManager defaultManager] fileExistsAtPath:filePathAndDirectory]) {
         NSLog(@"[FlutterPluginPDFViewer] Removing old documents cache");
-        [[NSFileManager defaultManager] removeItemAtPath:saveDirectory error:&error];
+        [[NSFileManager defaultManager] removeItemAtPath:filePathAndDirectory error:&error];
     }
 
-    if (![[NSFileManager defaultManager] createDirectoryAtPath:saveDirectory
+    if (![[NSFileManager defaultManager] createDirectoryAtPath:filePathAndDirectory
                                    withIntermediateDirectories:YES
                                                     attributes:nil
                                                          error:&error])
     {
-        NSLog(@"[FlutterPluginPDFViewer] Creating save directory returned error: %@", error);
+        NSLog(@"Create directory error: %@", error);
         return nil;
     }
-    // Generate random file size for document, will be used later when saving images into memory
-    fileName = [[NSUUID UUID] UUIDString];
-    NSLog(@"[FlutterPluginPdfViewer] File has %zd pages", pageCount);
-    return [NSString stringWithFormat:@"%zd", pageCount];
+    // Generate random file size for this document
+
+    kFileName = [[NSUUID UUID] UUIDString];
+    NSLog(@"[FlutterPluginPdfViewer] File has %zd pages", numberOfPages);
+    NSLog(@"[FlutterPluginPdfViewer] File will be saved in cache as %@", kFileName);
+    return [NSString stringWithFormat:@"%zd", numberOfPages];
 }
 
--(NSString*)getPage:(NSString *)url page:(size_t)pageNumber
+-(NSString*)getPage:(NSString *)url ofPage:(size_t)pageNumber
 {
-    NSURL * pdfPathUrl;
-    if([url containsString:filePath]){
-        pdfPathUrl = [NSURL URLWithString:url];
+    NSURL * sourcePDFUrl;
+    if([url containsString:kFilePath]){
+        sourcePDFUrl = [NSURL URLWithString:url];
     }else{
-        pdfPathUrl = [NSURL URLWithString:[filePath stringByAppendingString:url]];
+        sourcePDFUrl = [NSURL URLWithString:[kFilePath stringByAppendingString:url]];
     }
-    CGPDFDocumentRef pdfDoc = CGPDFDocumentCreateWithURL((__bridge CFURLRef)pdfPathUrl);
-    size_t pageCount = CGPDFDocumentGetpageCount(pdfDoc);
-    NSArray *getPath = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *documentsDirectory = [getPath objectAtIndex:0];
-    NSString *saveDirectory = [documentsDirectory stringByAppendingPathComponent:pluginDirectory];
+    CGPDFDocumentRef SourcePDFDocument = CGPDFDocumentCreateWithURL((__bridge CFURLRef)sourcePDFUrl);
+    size_t numberOfPages = CGPDFDocumentGetNumberOfPages(SourcePDFDocument);
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentsDirectory = [paths objectAtIndex:0];
+    NSString *filePathAndDirectory = [documentsDirectory stringByAppendingPathComponent:kDirectory];
     NSError *error;
 
-    // Prevent user to load a page higher then the total
-    if (pageNumber > pageCount) {
-        pageNumber = pageCount;
+    if (pageNumber > numberOfPages) {
+        pageNumber = numberOfPages;
     }
 
-    if (![[NSFileManager defaultManager] createDirectoryAtPath:saveDirectory
+    if (![[NSFileManager defaultManager] createDirectoryAtPath:filePathAndDirectory
                                    withIntermediateDirectories:YES
                                                     attributes:nil
                                                          error:&error])
     {
-        NSLog(@"[FlutterPluginPDFViewer] Creating save directory returned error: %@", error);
+        NSLog(@"Create directory error: %@", error);
         return nil;
     }
-    CGPDFPageRef pdfPage = CGPDFDocumentGetPage(pdfDoc, pageNumber);
-    CGPDFPageRetain(pdfPage);
-    NSString *saveFile = [NSString stringWithFormat:@"%@/%@-%d.png", pluginDirectory, fileName, (int)pageNumber];
-    NSString *filePath = [documentsDirectory stringByAppendingPathComponent:saveFile];
-    // Create a rect from PDF
-    CGRect rect = CGPDFPageGetBoxRect(pdfPage, kCGPDFMediaBox);
-    UIGraphicsBeginPDFContextToFile(filePath, rect, nil);
-    // Change DPI to 300
+    CGPDFPageRef SourcePDFPage = CGPDFDocumentGetPage(SourcePDFDocument, pageNumber);
+    CGPDFPageRetain(SourcePDFPage);
+    NSString *relativeOutputFilePath = [NSString stringWithFormat:@"%@/%@-%d.png", kDirectory, kFileName, (int)pageNumber];
+    NSString *imageFilePath = [documentsDirectory stringByAppendingPathComponent:relativeOutputFilePath];
+    CGRect sourceRect = CGPDFPageGetBoxRect(SourcePDFPage, kCGPDFMediaBox);
+    UIGraphicsBeginPDFContextToFile(imageFilePath, sourceRect, nil);
+    // Calculate resolution
+    // Set DPI to 300
     CGFloat dpi = 300.0 / 72.0;
-    CGFloat width = rect.size.width * dpi;
-    CGFloat height = rect.size.height * dpi;
+    CGFloat width = sourceRect.size.width * dpi;
+    CGFloat height = sourceRect.size.height * dpi;
     UIGraphicsBeginImageContext(CGSizeMake(width, height));
-        // Fill background with white color
+    // Fill Background
     CGContextRef currentContext = UIGraphicsGetCurrentContext();
-    CGContextSetRGBFillColor(currentContext, 1.0f, 1.0f, 1.0f, 1.0f);
-    CGContextFillRect(currentContext, CGContextGetClipBoundingBox(currentContext));
     // Change interpolation settings
     CGContextSetInterpolationQuality(currentContext, kCGInterpolationHigh);
+    // Fill background with white color
+    CGContextSetRGBFillColor(currentContext, 1.0f, 1.0f, 1.0f, 1.0f);
+    CGContextFillRect(currentContext, CGContextGetClipBoundingBox(currentContext));
     CGContextTranslateCTM(currentContext, 0.0, height);
-    // Scale
     CGContextScaleCTM(currentContext, dpi, -dpi);
     CGContextSaveGState(currentContext);
-    // Draw the page on the context
-    CGContextDrawPDFPage (currentContext, pdfPage);
+    CGContextDrawPDFPage (currentContext, SourcePDFPage);
     CGContextRestoreGState(currentContext);
-    // Get generated image and load in file
     UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
-    [UIImagePNGRepresentation(image) writeToFile: filePath atomically:YES];
-    return filePath;
+    [UIImagePNGRepresentation(image) writeToFile: imageFilePath atomically:YES];
+    return imageFilePath;
 }
 
 @end
