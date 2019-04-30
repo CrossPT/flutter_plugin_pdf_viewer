@@ -1,3 +1,7 @@
+## 1.0.6
+
+- Fixed issue in 1.0.5 on iOS that caused xcode build to fail
+
 ## 1.0.5
 
 - Fixed bug in iOS where due to caching of Flutter ImageProvider when switching documents old pages would persist
