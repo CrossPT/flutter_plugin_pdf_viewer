@@ -72,9 +72,7 @@ class _MyAppState extends State<MyApp> {
         body: Center(
             child: _isLoading
                 ? Center(child: CircularProgressIndicator())
-                : PDFViewer(
-                    document: document,
-                    tooltip: PDFViewerTooltip(first: "Batatas"))),
+                : PDFViewer(document: document)),
       ),
     );
   }

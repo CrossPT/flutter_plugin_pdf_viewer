@@ -35,6 +35,7 @@ class _PDFViewerState extends State<PDFViewer> {
   int _pageNumber = 1;
   int _oldPage = 0;
   PDFPage _page;
+  List<PDFPage> _pages = List();
 
   @override
   void didChangeDependencies() {
@@ -42,6 +43,7 @@ class _PDFViewerState extends State<PDFViewer> {
     _oldPage = 0;
     _pageNumber = 1;
     _isLoading = true;
+    _pages.clear();
     _loadPage();
   }
 
@@ -51,20 +53,19 @@ class _PDFViewerState extends State<PDFViewer> {
     _oldPage = 0;
     _pageNumber = 1;
     _isLoading = true;
+    _pages.clear();
     _loadPage();
   }
 
   _loadPage() async {
-    setState(() {
-      _isLoading = true;
-    });
+    setState(() => _isLoading = true);
     if (_oldPage == 0) {
       _page = await widget.document.get(page: _pageNumber);
-      setState(() => _isLoading = false);
     } else if (_oldPage != _pageNumber) {
       _oldPage = _pageNumber;
-      setState(() => _isLoading = true);
       _page = await widget.document.get(page: _pageNumber);
+    }
+    if (this.mounted) {
       setState(() => _isLoading = false);
     }
   }

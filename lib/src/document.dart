@@ -82,15 +82,16 @@ class PDFDocument {
     assert(page > 0);
     var data = await _channel
         .invokeMethod('getPage', {'filePath': _filePath, 'pageNumber': page});
-    return new PDFPage(data);
+    return new PDFPage(data, page);
   }
 
   // Stream all pages
   Observable<PDFPage> getAll() {
     return Future.forEach<PDFPage>(List(count), (i) async {
+      print(i);
       final data = await _channel
           .invokeMethod('getPage', {'filePath': _filePath, 'pageNumber': i});
-      return data;
+      return new PDFPage(data, 1);
     }).asStream();
   }
 }

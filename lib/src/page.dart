@@ -1,10 +1,13 @@
 import 'dart:io';
+import 'dart:ui';
 import 'package:flutter/widgets.dart';
+import 'package:flutter/painting.dart';
 import 'package:flutter_advanced_networkimage/zoomable.dart';
 
 class PDFPage extends StatefulWidget {
   final String imgPath;
-  PDFPage(this.imgPath);
+  final int num;
+  PDFPage(this.imgPath, this.num);
 
   @override
   _PDFPageState createState() => _PDFPageState();
@@ -30,9 +33,9 @@ class _PDFPageState extends State<PDFPage> {
   _repaint() {
     provider = FileImage(File(widget.imgPath));
     final resolver = provider.resolve(createLocalImageConfiguration(context));
-    resolver.addListener((imgInfo, alreadyPainted) {
+    resolver.addListener(ImageStreamListener((imgInfo, alreadyPainted) {
       if (!alreadyPainted) setState(() {});
-    });
+    }));
   }
 
   @override

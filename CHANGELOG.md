@@ -1,3 +1,9 @@
+## 1.0.7
+
+- Updated project to meet changed requirements by Flutter
+- Updated third-party dependencies
+- Fixes issue #21, #23
+
 ## 1.0.6
 
 - Fixed issue in 1.0.5 on iOS that caused xcode build to fail
