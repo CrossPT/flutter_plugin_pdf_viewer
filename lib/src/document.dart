@@ -33,9 +33,9 @@ class PDFDocument {
   /// Load a PDF File from a given URL.
   /// File is saved in cache
   ///
-  static Future<PDFDocument> fromURL(String url) async {
+  static Future<PDFDocument> fromURL(String url, {Map<String, String> headers}) async {
     // Download into cache
-    File f = await DefaultCacheManager().getSingleFile(url);
+    File f = await DefaultCacheManager().getSingleFile(url, headers: headers);
     PDFDocument document = PDFDocument();
     document._filePath = f.path;
     try {
