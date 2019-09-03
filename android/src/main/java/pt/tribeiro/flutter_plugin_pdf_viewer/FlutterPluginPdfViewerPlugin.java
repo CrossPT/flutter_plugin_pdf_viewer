@@ -16,12 +16,20 @@ import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
+import android.os.HandlerThread;
+import android.os.Process;
+import android.os.Handler;
 
 /**
  * FlutterPluginPdfViewerPlugin
  */
 public class FlutterPluginPdfViewerPlugin implements MethodCallHandler {
     private static Registrar instance;
+    private HandlerThread handlerThread;
+    private Handler backgroundHandler;
+    private final Object pluginLocker = new Object();
 
     /**
      * Plugin registration.
@@ -34,23 +42,44 @@ public class FlutterPluginPdfViewerPlugin implements MethodCallHandler {
 
     @Override
     public void onMethodCall(final MethodCall call, final Result result) {
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                switch (call.method) {
-                    case "getNumberOfPages":
-                        result.success(getNumberOfPages((String) call.argument("filePath")));
-                        break;
-                    case "getPage":
-                        result.success(getPage((String) call.argument("filePath"), (int) call.argument("pageNumber")));
-                        break;
-                    default:
-                        result.notImplemented();
-                        break;
-                }
+        synchronized(pluginLocker){
+            if (backgroundHandler == null) {
+                handlerThread = new HandlerThread("flutterPdfViewer", Process.THREAD_PRIORITY_BACKGROUND);
+                handlerThread.start();
+                backgroundHandler = new Handler(handlerThread.getLooper());
             }
-        });
-        thread.start();
+        }
+        final Handler mainThreadHandler = new Handler();
+        backgroundHandler.post(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        switch (call.method) {
+                            case "getNumberOfPages":
+                                final String numResult = getNumberOfPages((String) call.argument("filePath"));
+                                mainThreadHandler.post(new Runnable(){
+                                    @Override
+                                    public void run() {
+                                        result.success(numResult);
+                                    }
+                                });
+                                break;
+                            case "getPage":
+                                final String pageResult = getPage((String) call.argument("filePath"), (int) call.argument("pageNumber"));
+                                mainThreadHandler.post(new Runnable(){
+                                    @Override
+                                    public void run() {
+                                        result.success(pageResult);
+                                    }
+                                });
+                                break;
+                            default:
+                                result.notImplemented();
+                                break;
+                        }
+                    }
+                }
+        );
     }
 
     private String getNumberOfPages(String filePath) {
@@ -103,12 +132,11 @@ public class FlutterPluginPdfViewerPlugin implements MethodCallHandler {
             width = 2048;
             height = (int) (width / docRatio);
             Bitmap bitmap = Bitmap.createBitmap((int) width, (int) height, Bitmap.Config.ARGB_8888);
-
+            // Change background to white
             Canvas canvas = new Canvas(bitmap);
             canvas.drawColor(Color.WHITE);
-
+            // Render to bitmap
             page.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY);
-
             try {
                 return createTempPreview(bitmap, filePath, pageNumber);
             } finally {
@@ -124,5 +152,4 @@ public class FlutterPluginPdfViewerPlugin implements MethodCallHandler {
 
         return null;
     }
-
 }

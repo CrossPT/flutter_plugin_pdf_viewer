@@ -1,8 +1,8 @@
 #import "FlutterPluginPdfViewerPlugin.h"
 
 static NSString* const kDirectory = @"FlutterPluginPdfViewer";
-static NSString* const kOutputBaseName = @"page";
 static NSString* const kFilePath = @"file:///";
+static NSString* kFileName = @"";
 
 @implementation FlutterPluginPdfViewerPlugin
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
@@ -44,6 +44,12 @@ static NSString* const kFilePath = @"file:///";
     NSString *filePathAndDirectory = [documentsDirectory stringByAppendingPathComponent:kDirectory];
     NSError *error;
 
+    // Clear cache folder
+    if ([[NSFileManager defaultManager] fileExistsAtPath:filePathAndDirectory]) {
+        NSLog(@"[FlutterPluginPDFViewer] Removing old documents cache");
+        [[NSFileManager defaultManager] removeItemAtPath:filePathAndDirectory error:&error];
+    }
+
     if (![[NSFileManager defaultManager] createDirectoryAtPath:filePathAndDirectory
                                    withIntermediateDirectories:YES
                                                     attributes:nil
@@ -52,6 +58,11 @@ static NSString* const kFilePath = @"file:///";
         NSLog(@"Create directory error: %@", error);
         return nil;
     }
+    // Generate random file size for this document
+
+    kFileName = [[NSUUID UUID] UUIDString];
+    NSLog(@"[FlutterPluginPdfViewer] File has %zd pages", numberOfPages);
+    NSLog(@"[FlutterPluginPdfViewer] File will be saved in cache as %@", kFileName);
     return [NSString stringWithFormat:@"%zd", numberOfPages];
 }
 
@@ -83,17 +94,29 @@ static NSString* const kFilePath = @"file:///";
         return nil;
     }
     CGPDFPageRef SourcePDFPage = CGPDFDocumentGetPage(SourcePDFDocument, pageNumber);
-    // CoreGraphics: MUST retain the Page-Reference manually
     CGPDFPageRetain(SourcePDFPage);
-    NSString *relativeOutputFilePath = [NSString stringWithFormat:@"%@/%@%d.png", kDirectory, kOutputBaseName, (int)pageNumber];
+    NSString *relativeOutputFilePath = [NSString stringWithFormat:@"%@/%@-%d.png", kDirectory, kFileName, (int)pageNumber];
     NSString *imageFilePath = [documentsDirectory stringByAppendingPathComponent:relativeOutputFilePath];
     CGRect sourceRect = CGPDFPageGetBoxRect(SourcePDFPage, kCGPDFMediaBox);
     UIGraphicsBeginPDFContextToFile(imageFilePath, sourceRect, nil);
-    UIGraphicsBeginImageContext(CGSizeMake(sourceRect.size.width,sourceRect.size.height));
+    // Calculate resolution
+    // Set DPI to 300
+    CGFloat dpi = 300.0 / 72.0;
+    CGFloat width = sourceRect.size.width * dpi;
+    CGFloat height = sourceRect.size.height * dpi;
+    UIGraphicsBeginImageContext(CGSizeMake(width, height));
+    // Fill Background
     CGContextRef currentContext = UIGraphicsGetCurrentContext();
-    CGContextTranslateCTM(currentContext, 0.0, sourceRect.size.height); //596,842 //640×960,
-    CGContextScaleCTM(currentContext, 1.0, -1.0);
-    CGContextDrawPDFPage (currentContext, SourcePDFPage); // draws the page in the graphics context
+    // Change interpolation settings
+    CGContextSetInterpolationQuality(currentContext, kCGInterpolationHigh);
+    // Fill background with white color
+    CGContextSetRGBFillColor(currentContext, 1.0f, 1.0f, 1.0f, 1.0f);
+    CGContextFillRect(currentContext, CGContextGetClipBoundingBox(currentContext));
+    CGContextTranslateCTM(currentContext, 0.0, height);
+    CGContextScaleCTM(currentContext, dpi, -dpi);
+    CGContextSaveGState(currentContext);
+    CGContextDrawPDFPage (currentContext, SourcePDFPage);
+    CGContextRestoreGState(currentContext);
     UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
     [UIImagePNGRepresentation(image) writeToFile: imageFilePath atomically:YES];
