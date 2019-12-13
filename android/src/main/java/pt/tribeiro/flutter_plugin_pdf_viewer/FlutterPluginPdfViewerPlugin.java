@@ -31,6 +31,7 @@ public class FlutterPluginPdfViewerPlugin implements MethodCallHandler {
     private HandlerThread handlerThread;
     private Handler backgroundHandler;
     private final Object pluginLocker = new Object();
+    private final String filePrefix = "FlutterPluginPdfViewer";
 
     /**
      * Plugin registration.
@@ -86,7 +87,7 @@ public class FlutterPluginPdfViewerPlugin implements MethodCallHandler {
     private String getNumberOfPages(String filePath) {
         File pdf = new File(filePath);
         try {
-            clearCacheDir(filePath);
+            clearCacheDir();
             PdfRenderer renderer = new PdfRenderer(ParcelFileDescriptor.open(pdf, ParcelFileDescriptor.MODE_READ_ONLY));
             Bitmap bitmap;
             final int pageCount = renderer.getPageCount();
@@ -97,14 +98,13 @@ public class FlutterPluginPdfViewerPlugin implements MethodCallHandler {
         return null;
     }
 
-    private boolean clearCacheDir(String filePath) {
+    private boolean clearCacheDir() {
         try {
             File directory = instance.context().getCacheDir();
-            final String searchName = getFileNameFromPath(filePath);
             FilenameFilter myFilter = new FilenameFilter() {
                 @Override
                 public boolean accept(File dir, String name) {
-                    return name.toLowerCase().startsWith(searchName);
+                    return name.toLowerCase().startsWith(filePrefix);
                 }
             };
             File[] files = directory.listFiles(myFilter);
@@ -123,7 +123,7 @@ public class FlutterPluginPdfViewerPlugin implements MethodCallHandler {
     private String getFileNameFromPath(String name) {
         String filePath = name.substring(name.lastIndexOf('/') + 1);
         filePath = filePath.substring(0, filePath.lastIndexOf('.'));
-        return filePath;
+        return String.format("%s-%s", filePrefix, filePath);
     }
 
     private String createTempPreview(Bitmap bmp, String name, int page) {

@@ -1,6 +1,6 @@
 name: flutter_plugin_pdf_viewer
 description: A flutter plugin for handling PDF files. Works on both Android & iOS
-version: 1.0.7
+version: 1.0.8
 author: Tiago Ribeiro <tiagopribeiro.1992@gmail.com>
 homepage: https://github.com/CrossPT/flutter_plugin_pdf_viewer
 
