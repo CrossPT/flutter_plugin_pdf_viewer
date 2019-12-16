@@ -104,7 +104,7 @@ public class FlutterPluginPdfViewerPlugin implements MethodCallHandler {
             FilenameFilter myFilter = new FilenameFilter() {
                 @Override
                 public boolean accept(File dir, String name) {
-                    return name.toLowerCase().startsWith(filePrefix);
+                    return name.toLowerCase().startsWith(filePrefix.toLowerCase());
                 }
             };
             File[] files = directory.listFiles(myFilter);
