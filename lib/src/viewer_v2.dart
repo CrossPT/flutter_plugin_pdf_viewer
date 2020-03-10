@@ -123,7 +123,7 @@ class _PDFViewerV2State extends State<PDFViewerV2> {
         }).then((int value) {
       if (value != null) {
         _pageNumber = value;
-        _animateToPage();
+        _jumpToPage();
       }
     });
   }
@@ -169,7 +169,7 @@ class _PDFViewerV2State extends State<PDFViewerV2> {
                     child: IconButton(
                       icon: Icon(Icons.first_page),
                       tooltip: widget.tooltip.first,
-                      onPressed: () {
+                      onPressed: _pageNumber == 1 ? null : () {
                         _pageNumber = 1;
                         _jumpToPage();
                       },
@@ -179,7 +179,7 @@ class _PDFViewerV2State extends State<PDFViewerV2> {
                     child: IconButton(
                       icon: Icon(Icons.chevron_left),
                       tooltip: widget.tooltip.previous,
-                      onPressed: () {
+                      onPressed: _pageNumber == 1 ? null : () {
                         _pageNumber--;
                         if (1 > _pageNumber) {
                           _pageNumber = 1;
@@ -195,7 +195,7 @@ class _PDFViewerV2State extends State<PDFViewerV2> {
                     child: IconButton(
                       icon: Icon(Icons.chevron_right),
                       tooltip: widget.tooltip.next,
-                      onPressed: () {
+                      onPressed: _pageNumber == widget.document.count ? null :  () {
                         _pageNumber++;
                         if (widget.document.count < _pageNumber) {
                           _pageNumber = widget.document.count;
@@ -208,7 +208,7 @@ class _PDFViewerV2State extends State<PDFViewerV2> {
                     child: IconButton(
                       icon: Icon(Icons.last_page),
                       tooltip: widget.tooltip.last,
-                      onPressed: () {
+                      onPressed: _pageNumber == widget.document.count ? null : () {
                         _pageNumber = widget.document.count;
                         _jumpToPage();
                       },
