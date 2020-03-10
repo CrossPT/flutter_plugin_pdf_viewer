@@ -11,6 +11,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   bool _isLoading = true;
   PDFDocument document;
+  bool _useV2 = true;
 
   @override
   void initState() {
@@ -46,6 +47,14 @@ class _MyAppState extends State<MyApp> {
             children: <Widget>[
               SizedBox(height: 36),
               ListTile(
+                title: Text(_useV2 ? 'User Viewer V1' : 'Use Viewer V2'),
+                onTap: () {
+                  setState(() {
+                    _useV2 = !_useV2;
+                  });
+                },
+              ),
+              ListTile(
                 title: Text('Load from Assets'),
                 onTap: () {
                   changePDF(1);
@@ -70,9 +79,12 @@ class _MyAppState extends State<MyApp> {
           title: const Text('FlutterPluginPDFViewer'),
         ),
         body: Center(
-            child: _isLoading
-                ? Center(child: CircularProgressIndicator())
-                : PDFViewer(document: document)),
+          child: _isLoading
+              ? Center(child: CircularProgressIndicator())
+              : _useV2
+                  ? PDFViewerV2(document: document)
+                  : PDFViewer(document: document),
+        ),
       ),
     );
   }
