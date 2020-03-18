@@ -1,12 +1,12 @@
-# pdf_viewer
+# advance_pdf_viewer
 
 A flutter plugin for handling PDF files. Works on both Android & iOS. Originally forked from (https://github.com/CrossPT/flutter_plugin_pdf_viewer).
 
 ## Installation
 
-Add  *pdf_viewer*  as a dependency in [your pubspec.yaml file](https://flutter.io/platform-plugins/).
+Add  *advance_pdf_viewer*  as a dependency in [your pubspec.yaml file](https://flutter.io/platform-plugins/).
 ```
-pdf_viewer: any
+advance_pdf_viewer: any
 ```
 
 ---
