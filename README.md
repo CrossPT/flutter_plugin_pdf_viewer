@@ -1,6 +1,6 @@
 # pdf_viewer
 
-A flutter plugin for handling PDF files. Works on both Android & iOS
+A flutter plugin for handling PDF files. Works on both Android & iOS. Originally forked from (https://github.com/CrossPT/flutter_plugin_pdf_viewer).
 
 ## Installation
 
