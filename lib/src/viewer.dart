@@ -84,7 +84,7 @@ class _PDFViewerState extends State<PDFViewer> {
 
   Widget _drawIndicator() {
     Widget child = GestureDetector(
-        onTap: _pickPage,
+        onTap: widget.showPicker ? _pickPage : null,
         child: Container(
             padding:
                 EdgeInsets.only(top: 4.0, left: 16.0, bottom: 4.0, right: 16.0),
