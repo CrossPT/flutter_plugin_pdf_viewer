@@ -13,6 +13,7 @@ class PDFViewer extends StatefulWidget {
   final bool showPicker;
   final bool showNavigation;
   final PDFViewerTooltip tooltip;
+  final Widget Function(BuildContext, int pageNumber, int totalPages, void Function({int page}) jumpToPage, void Function({int page}) animateToPage,) navigationBuilder;
 
   PDFViewer(
       {Key key,
@@ -23,6 +24,7 @@ class PDFViewer extends StatefulWidget {
       this.showPicker = true,
       this.showNavigation = true,
       this.tooltip = const PDFViewerTooltip(),
+      this.navigationBuilder,
       this.indicatorPosition = IndicatorPosition.topRight})
       : super(key: key);
 
@@ -73,11 +75,11 @@ class _PDFViewerState extends State<PDFViewer> {
     }
   }
 
-  _animateToPage() {
-    _pageController.animateToPage(_pageNumber-1, duration: animationDuration, curve: animationCurve);
+  _animateToPage({int page}) {
+    _pageController.animateToPage(page != null ? page : _pageNumber-1, duration: animationDuration, curve: animationCurve);
   }
-  _jumpToPage() {
-    _pageController.jumpToPage(_pageNumber-1);
+  _jumpToPage({int page}) {
+    _pageController.jumpToPage(page != null ? page : _pageNumber-1);
   }
 
   Widget _drawIndicator() {
@@ -161,7 +163,13 @@ class _PDFViewerState extends State<PDFViewer> {
           : null,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: (widget.showNavigation || widget.document.count > 1)
-          ? BottomAppBar(
+          ? widget.navigationBuilder != null ? widget.navigationBuilder(
+            context,
+            _pageNumber,
+            widget.document.count,
+            _jumpToPage,
+            _animateToPage,
+          ) : BottomAppBar(
               child: new Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
