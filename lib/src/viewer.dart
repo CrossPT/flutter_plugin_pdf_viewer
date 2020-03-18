@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pdf_viewer/pdf_viewer.dart';
 import 'package:numberpicker/numberpicker.dart';
-import 'tooltip.dart';
 
 enum IndicatorPosition { topLeft, topRight, bottomLeft, bottomRight }
 
@@ -33,41 +32,52 @@ class PDFViewer extends StatefulWidget {
 class _PDFViewerState extends State<PDFViewer> {
   bool _isLoading = true;
   int _pageNumber = 1;
-  int _oldPage = 0;
-  PDFPage _page;
-  List<PDFPage> _pages = List();
+  List<PDFPage> _pages;
+  PageController _pageController;
+  final Duration animationDuration = Duration(milliseconds: 200);
+  final Curve animationCurve = Curves.easeIn;
+
+  @override
+  void initState() { 
+    super.initState();
+    _pages = List(widget.document.count);
+    _pageController = PageController();
+  }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _oldPage = 0;
     _pageNumber = 1;
     _isLoading = true;
-    _pages.clear();
+    _pages = List(widget.document.count);
+    // _loadAllPages();
     _loadPage();
   }
 
   @override
   void didUpdateWidget(PDFViewer oldWidget) {
     super.didUpdateWidget(oldWidget);
-    _oldPage = 0;
-    _pageNumber = 1;
-    _isLoading = true;
-    _pages.clear();
-    _loadPage();
   }
 
   _loadPage() async {
-    setState(() => _isLoading = true);
-    if (_oldPage == 0) {
-      _page = await widget.document.get(page: _pageNumber);
-    } else if (_oldPage != _pageNumber) {
-      _oldPage = _pageNumber;
-      _page = await widget.document.get(page: _pageNumber);
+    if(_pages[_pageNumber-1] != null) return;
+    setState(() {
+      _isLoading = true;
+    });
+    final data = await widget.document.get(page: _pageNumber);
+    _pages[_pageNumber-1] = data;
+    if(mounted) {
+      setState(() {
+        _isLoading = false;
+      });
     }
-    if(this.mounted) {
-      setState(() => _isLoading = false);
-    }
+  }
+
+  _animateToPage() {
+    _pageController.animateToPage(_pageNumber-1, duration: animationDuration, curve: animationCurve);
+  }
+  _jumpToPage() {
+    _pageController.jumpToPage(_pageNumber-1);
   }
 
   Widget _drawIndicator() {
@@ -113,7 +123,7 @@ class _PDFViewerState extends State<PDFViewer> {
         }).then((int value) {
       if (value != null) {
         _pageNumber = value;
-        _loadPage();
+        _jumpToPage();
       }
     });
   }
@@ -123,7 +133,17 @@ class _PDFViewerState extends State<PDFViewer> {
     return Scaffold(
       body: Stack(
         children: <Widget>[
-          _isLoading ? Center(child: CircularProgressIndicator()) : _page,
+          PageView.builder(
+            onPageChanged: (page) {
+              setState(() {
+                _pageNumber = page+1;
+              });
+              _loadPage();
+            },
+            controller: _pageController,
+            itemCount: _pages?.length ?? 0,
+            itemBuilder: (context,index) => _pages[index] == null ? Center(child: CircularProgressIndicator(),) : _pages[index],
+          ),
           (widget.showIndicator && !_isLoading)
               ? _drawIndicator()
               : Container(),
@@ -149,9 +169,9 @@ class _PDFViewerState extends State<PDFViewer> {
                     child: IconButton(
                       icon: Icon(Icons.first_page),
                       tooltip: widget.tooltip.first,
-                      onPressed: () {
+                      onPressed: _pageNumber == 1 ? null : () {
                         _pageNumber = 1;
-                        _loadPage();
+                        _jumpToPage();
                       },
                     ),
                   ),
@@ -159,12 +179,12 @@ class _PDFViewerState extends State<PDFViewer> {
                     child: IconButton(
                       icon: Icon(Icons.chevron_left),
                       tooltip: widget.tooltip.previous,
-                      onPressed: () {
+                      onPressed: _pageNumber == 1 ? null : () {
                         _pageNumber--;
                         if (1 > _pageNumber) {
                           _pageNumber = 1;
                         }
-                        _loadPage();
+                        _animateToPage();
                       },
                     ),
                   ),
@@ -175,12 +195,12 @@ class _PDFViewerState extends State<PDFViewer> {
                     child: IconButton(
                       icon: Icon(Icons.chevron_right),
                       tooltip: widget.tooltip.next,
-                      onPressed: () {
+                      onPressed: _pageNumber == widget.document.count ? null :  () {
                         _pageNumber++;
                         if (widget.document.count < _pageNumber) {
                           _pageNumber = widget.document.count;
                         }
-                        _loadPage();
+                        _animateToPage();
                       },
                     ),
                   ),
@@ -188,9 +208,9 @@ class _PDFViewerState extends State<PDFViewer> {
                     child: IconButton(
                       icon: Icon(Icons.last_page),
                       tooltip: widget.tooltip.last,
-                      onPressed: () {
+                      onPressed: _pageNumber == widget.document.count ? null : () {
                         _pageNumber = widget.document.count;
-                        _loadPage();
+                        _jumpToPage();
                       },
                     ),
                   ),
