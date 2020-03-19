@@ -163,7 +163,9 @@ class _PDFViewerState extends State<PDFViewer> {
       body: Stack(
         children: <Widget>[
           PageView.builder(
-            physics: _swipeEnabled && widget.enableSwipeNavigation ? null : NeverScrollableScrollPhysics(),
+            physics: _swipeEnabled && widget.enableSwipeNavigation
+                ? null
+                : NeverScrollableScrollPhysics(),
             onPageChanged: (page) {
               setState(() {
                 _pageNumber = page + 1;
