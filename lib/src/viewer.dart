@@ -15,6 +15,7 @@ class PDFViewer extends StatefulWidget {
   final PDFViewerTooltip tooltip;
   final bool enableSwipeNavigation;
   final Axis scrollDirection;
+  final bool lazyLoad;
   final Widget Function(
     BuildContext,
     int pageNumber,
@@ -27,6 +28,7 @@ class PDFViewer extends StatefulWidget {
       {Key key,
       @required this.document,
       this.scrollDirection,
+      this.lazyLoad = true,
       this.indicatorText = Colors.white,
       this.indicatorBackground = Colors.black54,
       this.showIndicator = true,
@@ -55,6 +57,8 @@ class _PDFViewerState extends State<PDFViewer> {
     super.initState();
     _pages = List(widget.document.count);
     _pageController = PageController();
+    if (!widget.lazyLoad)
+      widget.document.preloadPages(onZoomChanged: onZoomChanged);
   }
 
   @override
