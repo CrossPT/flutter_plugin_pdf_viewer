@@ -12,6 +12,8 @@ class PDFDocument {
 
   String _filePath;
   int count;
+  List<PDFPage> _pages = [];
+  bool _preloaded = false;
 
   /// Load a PDF File from a given File
   ///
@@ -81,6 +83,7 @@ class PDFDocument {
   Future<PDFPage> get(
       {int page = 1, final Function(double) onZoomChanged}) async {
     assert(page > 0);
+    if (_preloaded && _pages.isNotEmpty) return _pages[page - 1];
     var data = await _channel
         .invokeMethod('getPage', {'filePath': _filePath, 'pageNumber': page});
     return new PDFPage(
@@ -88,6 +91,21 @@ class PDFDocument {
       page,
       onZoomChanged: onZoomChanged,
     );
+  }
+
+  Future<void> preloadPages({final Function(double) onZoomChanged}) async {
+    int countvar = 1;
+    await Future.forEach<int>(List(count), (i) async {
+      final data = await _channel.invokeMethod(
+          'getPage', {'filePath': _filePath, 'pageNumber': countvar});
+      _pages.add(PDFPage(
+        data,
+        countvar,
+        onZoomChanged: onZoomChanged,
+      ));
+      countvar++;
+    });
+    _preloaded = true;
   }
 
   // Stream all pages
