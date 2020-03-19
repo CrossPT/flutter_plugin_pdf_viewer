@@ -1,4 +1,10 @@
-# 1.1.0
+# Changelog
+
+## 1.1.1
+- Option to disable swipe navigation `PDFViewer(document: document,scrollDirection: Aixs.vertical)`
+- Option to change scroll axis to vertical or horizontal `PDFViewer(document: document,scrollDirection: Aixs.vertical)`
+
+## 1.1.0
 - Removed rxdart dependency
 - Upgraded to androidX
 - Added support to optional header while loading document from url
