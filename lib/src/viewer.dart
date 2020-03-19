@@ -97,7 +97,7 @@ class _PDFViewerState extends State<PDFViewer> {
 
   Widget _drawIndicator() {
     Widget child = GestureDetector(
-        onTap: widget.showPicker ? _pickPage : null,
+        onTap: widget.showPicker && widget.document.count > 1 ? _pickPage : null,
         child: Container(
             padding:
                 EdgeInsets.only(top: 4.0, left: 16.0, bottom: 4.0, right: 16.0),
@@ -165,7 +165,7 @@ class _PDFViewerState extends State<PDFViewer> {
               : Container(),
         ],
       ),
-      floatingActionButton: widget.showPicker
+      floatingActionButton: widget.showPicker && widget.document.count > 1
           ? FloatingActionButton(
               elevation: 4.0,
               tooltip: widget.tooltip.jump,
