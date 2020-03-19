@@ -86,7 +86,7 @@ class PDFDocument {
   }
 
   // Stream all pages
-  Observable<PDFPage> getAll({final Function(double) onZoomChanged}) {
+  Stream<PDFPage> getAll({final Function(double) onZoomChanged}) {
     return Future.forEach<PDFPage>(List(count), (i) async {
       print(i);
       final data = await _channel
