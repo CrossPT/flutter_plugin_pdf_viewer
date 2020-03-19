@@ -13,7 +13,13 @@ class PDFViewer extends StatefulWidget {
   final bool showPicker;
   final bool showNavigation;
   final PDFViewerTooltip tooltip;
-  final Widget Function(BuildContext, int pageNumber, int totalPages, void Function({int page}) jumpToPage, void Function({int page}) animateToPage,) navigationBuilder;
+  final Widget Function(
+    BuildContext,
+    int pageNumber,
+    int totalPages,
+    void Function({int page}) jumpToPage,
+    void Function({int page}) animateToPage,
+  ) navigationBuilder;
 
   PDFViewer(
       {Key key,
@@ -41,7 +47,7 @@ class _PDFViewerState extends State<PDFViewer> {
   final Curve animationCurve = Curves.easeIn;
 
   @override
-  void initState() { 
+  void initState() {
     super.initState();
     _pages = List(widget.document.count);
     _pageController = PageController();
@@ -63,11 +69,11 @@ class _PDFViewerState extends State<PDFViewer> {
   }
 
   onZoomChanged(double scale) {
-    if(scale != 1.0) {
+    if (scale != 1.0) {
       setState(() {
         _swipeEnabled = false;
       });
-    }else{
+    } else {
       setState(() {
         _swipeEnabled = true;
       });
@@ -75,13 +81,14 @@ class _PDFViewerState extends State<PDFViewer> {
   }
 
   _loadPage() async {
-    if(_pages[_pageNumber-1] != null) return;
+    if (_pages[_pageNumber - 1] != null) return;
     setState(() {
       _isLoading = true;
     });
-    final data = await widget.document.get(page: _pageNumber,onZoomChanged: onZoomChanged);
-    _pages[_pageNumber-1] = data;
-    if(mounted) {
+    final data = await widget.document
+        .get(page: _pageNumber, onZoomChanged: onZoomChanged);
+    _pages[_pageNumber - 1] = data;
+    if (mounted) {
       setState(() {
         _isLoading = false;
       });
@@ -89,15 +96,18 @@ class _PDFViewerState extends State<PDFViewer> {
   }
 
   _animateToPage({int page}) {
-    _pageController.animateToPage(page != null ? page : _pageNumber-1, duration: animationDuration, curve: animationCurve);
+    _pageController.animateToPage(page != null ? page : _pageNumber - 1,
+        duration: animationDuration, curve: animationCurve);
   }
+
   _jumpToPage({int page}) {
-    _pageController.jumpToPage(page != null ? page : _pageNumber-1);
+    _pageController.jumpToPage(page != null ? page : _pageNumber - 1);
   }
 
   Widget _drawIndicator() {
     Widget child = GestureDetector(
-        onTap: widget.showPicker && widget.document.count > 1 ? _pickPage : null,
+        onTap:
+            widget.showPicker && widget.document.count > 1 ? _pickPage : null,
         child: Container(
             padding:
                 EdgeInsets.only(top: 4.0, left: 16.0, bottom: 4.0, right: 16.0),
@@ -152,13 +162,17 @@ class _PDFViewerState extends State<PDFViewer> {
             physics: _swipeEnabled ? null : NeverScrollableScrollPhysics(),
             onPageChanged: (page) {
               setState(() {
-                _pageNumber = page+1;
+                _pageNumber = page + 1;
               });
               _loadPage();
             },
             controller: _pageController,
             itemCount: _pages?.length ?? 0,
-            itemBuilder: (context,index) => _pages[index] == null ? Center(child: CircularProgressIndicator(),) : _pages[index],
+            itemBuilder: (context, index) => _pages[index] == null
+                ? Center(
+                    child: CircularProgressIndicator(),
+                  )
+                : _pages[index],
           ),
           (widget.showIndicator && !_isLoading)
               ? _drawIndicator()
@@ -177,68 +191,78 @@ class _PDFViewerState extends State<PDFViewer> {
           : null,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: (widget.showNavigation || widget.document.count > 1)
-          ? widget.navigationBuilder != null ? widget.navigationBuilder(
-            context,
-            _pageNumber,
-            widget.document.count,
-            _jumpToPage,
-            _animateToPage,
-          ) : BottomAppBar(
-              child: new Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Expanded(
-                    child: IconButton(
-                      icon: Icon(Icons.first_page),
-                      tooltip: widget.tooltip.first,
-                      onPressed: _pageNumber == 1 ? null : () {
-                        _pageNumber = 1;
-                        _jumpToPage();
-                      },
-                    ),
+          ? widget.navigationBuilder != null
+              ? widget.navigationBuilder(
+                  context,
+                  _pageNumber,
+                  widget.document.count,
+                  _jumpToPage,
+                  _animateToPage,
+                )
+              : BottomAppBar(
+                  child: new Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Expanded(
+                        child: IconButton(
+                          icon: Icon(Icons.first_page),
+                          tooltip: widget.tooltip.first,
+                          onPressed: _pageNumber == 1
+                              ? null
+                              : () {
+                                  _pageNumber = 1;
+                                  _jumpToPage();
+                                },
+                        ),
+                      ),
+                      Expanded(
+                        child: IconButton(
+                          icon: Icon(Icons.chevron_left),
+                          tooltip: widget.tooltip.previous,
+                          onPressed: _pageNumber == 1
+                              ? null
+                              : () {
+                                  _pageNumber--;
+                                  if (1 > _pageNumber) {
+                                    _pageNumber = 1;
+                                  }
+                                  _animateToPage();
+                                },
+                        ),
+                      ),
+                      widget.showPicker
+                          ? Expanded(child: Text(''))
+                          : SizedBox(width: 1),
+                      Expanded(
+                        child: IconButton(
+                          icon: Icon(Icons.chevron_right),
+                          tooltip: widget.tooltip.next,
+                          onPressed: _pageNumber == widget.document.count
+                              ? null
+                              : () {
+                                  _pageNumber++;
+                                  if (widget.document.count < _pageNumber) {
+                                    _pageNumber = widget.document.count;
+                                  }
+                                  _animateToPage();
+                                },
+                        ),
+                      ),
+                      Expanded(
+                        child: IconButton(
+                          icon: Icon(Icons.last_page),
+                          tooltip: widget.tooltip.last,
+                          onPressed: _pageNumber == widget.document.count
+                              ? null
+                              : () {
+                                  _pageNumber = widget.document.count;
+                                  _jumpToPage();
+                                },
+                        ),
+                      ),
+                    ],
                   ),
-                  Expanded(
-                    child: IconButton(
-                      icon: Icon(Icons.chevron_left),
-                      tooltip: widget.tooltip.previous,
-                      onPressed: _pageNumber == 1 ? null : () {
-                        _pageNumber--;
-                        if (1 > _pageNumber) {
-                          _pageNumber = 1;
-                        }
-                        _animateToPage();
-                      },
-                    ),
-                  ),
-                  widget.showPicker
-                      ? Expanded(child: Text(''))
-                      : SizedBox(width: 1),
-                  Expanded(
-                    child: IconButton(
-                      icon: Icon(Icons.chevron_right),
-                      tooltip: widget.tooltip.next,
-                      onPressed: _pageNumber == widget.document.count ? null :  () {
-                        _pageNumber++;
-                        if (widget.document.count < _pageNumber) {
-                          _pageNumber = widget.document.count;
-                        }
-                        _animateToPage();
-                      },
-                    ),
-                  ),
-                  Expanded(
-                    child: IconButton(
-                      icon: Icon(Icons.last_page),
-                      tooltip: widget.tooltip.last,
-                      onPressed: _pageNumber == widget.document.count ? null : () {
-                        _pageNumber = widget.document.count;
-                        _jumpToPage();
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            )
+                )
           : Container(),
     );
   }

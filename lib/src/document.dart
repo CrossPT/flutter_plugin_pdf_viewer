@@ -32,9 +32,10 @@ class PDFDocument {
   /// Load a PDF File from a given URL.
   /// File is saved in cache
   ///
-  static Future<PDFDocument> fromURL(String url,{Map<String,String> headers}) async {
+  static Future<PDFDocument> fromURL(String url,
+      {Map<String, String> headers}) async {
     // Download into cache
-    File f = await DefaultCacheManager().getSingleFile(url,headers: headers);
+    File f = await DefaultCacheManager().getSingleFile(url, headers: headers);
     PDFDocument document = PDFDocument();
     document._filePath = f.path;
     try {
@@ -77,11 +78,16 @@ class PDFDocument {
   /// Load specific page
   ///
   /// [page] defaults to `1` and must be equal or above it
-  Future<PDFPage> get({int page = 1, final Function(double) onZoomChanged}) async {
+  Future<PDFPage> get(
+      {int page = 1, final Function(double) onZoomChanged}) async {
     assert(page > 0);
     var data = await _channel
         .invokeMethod('getPage', {'filePath': _filePath, 'pageNumber': page});
-    return new PDFPage(data, page,onZoomChanged: onZoomChanged,);
+    return new PDFPage(
+      data,
+      page,
+      onZoomChanged: onZoomChanged,
+    );
   }
 
   // Stream all pages
@@ -90,7 +96,11 @@ class PDFDocument {
       print(i);
       final data = await _channel
           .invokeMethod('getPage', {'filePath': _filePath, 'pageNumber': i});
-      return new PDFPage(data, 1,onZoomChanged: onZoomChanged,);
+      return new PDFPage(
+        data,
+        1,
+        onZoomChanged: onZoomChanged,
+      );
     }).asStream();
   }
 }
