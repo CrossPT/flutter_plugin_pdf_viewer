@@ -74,6 +74,9 @@ class _MyAppState extends State<MyApp> {
               ? Center(child: CircularProgressIndicator())
               : PDFViewer(
                   document: document,
+                  // uncomment below line to scroll vertically
+                  // scrollDirection: Axis.vertical,
+                  
                   //uncomment below code to replace bottom navigation with your own
                   /* navigationBuilder:
                       (context, page, totalPages, jumpToPage, animateToPage) {

@@ -14,6 +14,7 @@ class PDFViewer extends StatefulWidget {
   final bool showNavigation;
   final PDFViewerTooltip tooltip;
   final bool enableSwipeNavigation;
+  final Axis scrollDirection;
   final Widget Function(
     BuildContext,
     int pageNumber,
@@ -25,6 +26,7 @@ class PDFViewer extends StatefulWidget {
   PDFViewer(
       {Key key,
       @required this.document,
+      this.scrollDirection,
       this.indicatorText = Colors.white,
       this.indicatorBackground = Colors.black54,
       this.showIndicator = true,
@@ -168,6 +170,7 @@ class _PDFViewerState extends State<PDFViewer> {
               });
               _loadPage();
             },
+            scrollDirection: widget.scrollDirection ?? Axis.horizontal,
             controller: _pageController,
             itemCount: _pages?.length ?? 0,
             itemBuilder: (context, index) => _pages[index] == null
