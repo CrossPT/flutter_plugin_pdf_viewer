@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.1.2
+- Option to preload all pages in memory `PDFViewer(document: document,lazyLoad: false)`
+
 ## 1.1.1
 - Option to disable swipe navigation `PDFViewer(document: document,scrollDirection: Aixs.vertical)`
 - Option to change scroll axis to vertical or horizontal `PDFViewer(document: document,scrollDirection: Aixs.vertical)`
