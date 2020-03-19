@@ -34,6 +34,7 @@ class PDFViewer extends StatefulWidget {
 class _PDFViewerState extends State<PDFViewer> {
   bool _isLoading = true;
   int _pageNumber = 1;
+  bool _swipeEnabled = true;
   List<PDFPage> _pages;
   PageController _pageController;
   final Duration animationDuration = Duration(milliseconds: 200);
@@ -61,12 +62,24 @@ class _PDFViewerState extends State<PDFViewer> {
     super.didUpdateWidget(oldWidget);
   }
 
+  onZoomChanged(double scale) {
+    if(scale != 1.0) {
+      setState(() {
+        _swipeEnabled = false;
+      });
+    }else{
+      setState(() {
+        _swipeEnabled = true;
+      });
+    }
+  }
+
   _loadPage() async {
     if(_pages[_pageNumber-1] != null) return;
     setState(() {
       _isLoading = true;
     });
-    final data = await widget.document.get(page: _pageNumber);
+    final data = await widget.document.get(page: _pageNumber,onZoomChanged: onZoomChanged);
     _pages[_pageNumber-1] = data;
     if(mounted) {
       setState(() {
@@ -136,6 +149,7 @@ class _PDFViewerState extends State<PDFViewer> {
       body: Stack(
         children: <Widget>[
           PageView.builder(
+            physics: _swipeEnabled ? null : NeverScrollableScrollPhysics(),
             onPageChanged: (page) {
               setState(() {
                 _pageNumber = page+1;

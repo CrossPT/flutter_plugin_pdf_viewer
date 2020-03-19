@@ -78,20 +78,20 @@ class PDFDocument {
   /// Load specific page
   ///
   /// [page] defaults to `1` and must be equal or above it
-  Future<PDFPage> get({int page = 1}) async {
+  Future<PDFPage> get({int page = 1, final Function(double) onZoomChanged}) async {
     assert(page > 0);
     var data = await _channel
         .invokeMethod('getPage', {'filePath': _filePath, 'pageNumber': page});
-    return new PDFPage(data, page);
+    return new PDFPage(data, page,onZoomChanged: onZoomChanged,);
   }
 
   // Stream all pages
-  Observable<PDFPage> getAll() {
+  Observable<PDFPage> getAll({final Function(double) onZoomChanged}) {
     return Future.forEach<PDFPage>(List(count), (i) async {
       print(i);
       final data = await _channel
           .invokeMethod('getPage', {'filePath': _filePath, 'pageNumber': i});
-      return new PDFPage(data, 1);
+      return new PDFPage(data, 1,onZoomChanged: onZoomChanged,);
     }).asStream();
   }
 }
