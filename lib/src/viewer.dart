@@ -13,6 +13,7 @@ class PDFViewer extends StatefulWidget {
   final bool showPicker;
   final bool showNavigation;
   final PDFViewerTooltip tooltip;
+  final bool enableSwipeNavigation;
   final Widget Function(
     BuildContext,
     int pageNumber,
@@ -29,6 +30,7 @@ class PDFViewer extends StatefulWidget {
       this.showIndicator = true,
       this.showPicker = true,
       this.showNavigation = true,
+      this.enableSwipeNavigation = true,
       this.tooltip = const PDFViewerTooltip(),
       this.navigationBuilder,
       this.indicatorPosition = IndicatorPosition.topRight})
@@ -159,7 +161,7 @@ class _PDFViewerState extends State<PDFViewer> {
       body: Stack(
         children: <Widget>[
           PageView.builder(
-            physics: _swipeEnabled ? null : NeverScrollableScrollPhysics(),
+            physics: _swipeEnabled && widget.enableSwipeNavigation ? null : NeverScrollableScrollPhysics(),
             onPageChanged: (page) {
               setState(() {
                 _pageNumber = page + 1;
