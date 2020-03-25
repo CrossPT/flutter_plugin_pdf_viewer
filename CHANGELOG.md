@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.1.3
+- Option to pass in controller `PDFViewer(document: document,controller: PageController())` that you can use to control the pageview rendering the PDF pages.
+
 ## 1.1.2
 - Option to preload all pages in memory `PDFViewer(document: document,lazyLoad: false)`
 
