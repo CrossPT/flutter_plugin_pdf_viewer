@@ -16,6 +16,7 @@ class PDFViewer extends StatefulWidget {
   final bool enableSwipeNavigation;
   final Axis scrollDirection;
   final bool lazyLoad;
+  final PageController controller;
   final Widget Function(
     BuildContext,
     int pageNumber,
@@ -37,6 +38,7 @@ class PDFViewer extends StatefulWidget {
       this.enableSwipeNavigation = true,
       this.tooltip = const PDFViewerTooltip(),
       this.navigationBuilder,
+      this.controller,
       this.indicatorPosition = IndicatorPosition.topRight})
       : super(key: key);
 
@@ -56,7 +58,7 @@ class _PDFViewerState extends State<PDFViewer> {
   void initState() {
     super.initState();
     _pages = List(widget.document.count);
-    _pageController = PageController();
+    _pageController = widget.controller ?? PageController();
     if (!widget.lazyLoad)
       widget.document.preloadPages(onZoomChanged: onZoomChanged);
   }
