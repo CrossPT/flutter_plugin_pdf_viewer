@@ -47,7 +47,7 @@ class PDFViewer extends StatefulWidget {
 
 class _PDFViewerState extends State<PDFViewer> {
   bool _isLoading = true;
-  int _pageNumber = 1;
+  int _pageNumber;
   bool _swipeEnabled = true;
   List<PDFPage> _pages;
   PageController _pageController;
@@ -59,6 +59,7 @@ class _PDFViewerState extends State<PDFViewer> {
     super.initState();
     _pages = List(widget.document.count);
     _pageController = widget.controller ?? PageController();
+    _pageNumber = _pageController.initialPage+1;
     if (!widget.lazyLoad)
       widget.document.preloadPages(onZoomChanged: onZoomChanged);
   }
@@ -66,7 +67,7 @@ class _PDFViewerState extends State<PDFViewer> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _pageNumber = 1;
+    _pageNumber = _pageController.initialPage+1;
     _isLoading = true;
     _pages = List(widget.document.count);
     // _loadAllPages();

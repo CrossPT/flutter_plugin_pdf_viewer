@@ -1,6 +1,9 @@
 # Changelog
 
 ## 1.1.4
+* Page controller initial page setting fixed (making able to set initially loaded page)
+
+## 1.1.4
 * Proper android cache cleanup
 * iOS build fix
 
