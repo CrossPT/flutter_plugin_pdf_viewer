@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.4
+* Proper android cache cleanup
+* iOS build fix
+
 ## 1.1.3
 - Option to pass in controller `PDFViewer(document: document,controller: PageController())` that you can use to control the pageview rendering the PDF pages.
 
