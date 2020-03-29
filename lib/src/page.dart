@@ -8,7 +8,19 @@ class PDFPage extends StatefulWidget {
   final String imgPath;
   final int num;
   final Function(double) onZoomChanged;
-  PDFPage(this.imgPath, this.num, {this.onZoomChanged});
+  final int zoomSteps;
+  final double minScale;
+  final double maxScale;
+  final double panLimit;
+  PDFPage(
+    this.imgPath,
+    this.num, {
+    this.onZoomChanged,
+    this.zoomSteps = 3,
+    this.minScale = 1.0,
+    this.maxScale = 5.0,
+    this.panLimit = 1.0,
+  });
 
   @override
   _PDFPageState createState() => _PDFPageState();
@@ -45,10 +57,10 @@ class _PDFPageState extends State<PDFPage> {
         decoration: null,
         child: ZoomableWidget(
           onZoomChanged: widget.onZoomChanged,
-          zoomSteps: 3,
-          minScale: 1.0,
-          panLimit: 1.0,
-          maxScale: 5.0,
+          zoomSteps: widget.zoomSteps ?? 3,
+          minScale: widget.minScale ?? 1.0,
+          panLimit: widget.panLimit ?? 1.0,
+          maxScale: widget.maxScale ?? 5.0,
           child: Image(image: provider),
         ));
   }
