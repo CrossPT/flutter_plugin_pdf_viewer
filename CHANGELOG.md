@@ -1,6 +1,9 @@
 # Changelog
 
-## 1.1.4
+## 1.1.6
+* Exposing `ZoomableWidget` from [flutter_advanced_networkimage](https://pub.dartlang.org/packages/flutter_advanced_networkimage) parameters (minScale, zoomSteps, maxScale,panLimit)
+
+## 1.1.5
 * Page controller initial page setting fixed (making able to set initially loaded page)
 
 ## 1.1.4
