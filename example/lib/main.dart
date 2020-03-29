@@ -74,6 +74,7 @@ class _MyAppState extends State<MyApp> {
               ? Center(child: CircularProgressIndicator())
               : PDFViewer(
                   document: document,
+                  zoomSteps: 1,
                   //uncomment below line to preload all pages
                   // lazyLoad: false,
                   // uncomment below line to scroll vertically

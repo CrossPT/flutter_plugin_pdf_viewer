@@ -17,6 +17,11 @@ class PDFViewer extends StatefulWidget {
   final Axis scrollDirection;
   final bool lazyLoad;
   final PageController controller;
+  final int zoomSteps;
+  final double minScale;
+  final double maxScale;
+  final double panLimit;
+
   final Widget Function(
     BuildContext,
     int pageNumber,
@@ -39,7 +44,11 @@ class PDFViewer extends StatefulWidget {
       this.tooltip = const PDFViewerTooltip(),
       this.navigationBuilder,
       this.controller,
-      this.indicatorPosition = IndicatorPosition.topRight})
+      this.indicatorPosition = IndicatorPosition.topRight,
+      this.zoomSteps,
+      this.minScale,
+      this.maxScale,
+      this.panLimit})
       : super(key: key);
 
   _PDFViewerState createState() => _PDFViewerState();
@@ -59,15 +68,21 @@ class _PDFViewerState extends State<PDFViewer> {
     super.initState();
     _pages = List(widget.document.count);
     _pageController = widget.controller ?? PageController();
-    _pageNumber = _pageController.initialPage+1;
+    _pageNumber = _pageController.initialPage + 1;
     if (!widget.lazyLoad)
-      widget.document.preloadPages(onZoomChanged: onZoomChanged);
+      widget.document.preloadPages(
+        onZoomChanged: onZoomChanged,
+        zoomSteps: widget.zoomSteps,
+        minScale: widget.minScale,
+        maxScale: widget.maxScale,
+        panLimit: widget.panLimit,
+      );
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _pageNumber = _pageController.initialPage+1;
+    _pageNumber = _pageController.initialPage + 1;
     _isLoading = true;
     _pages = List(widget.document.count);
     // _loadAllPages();
@@ -96,8 +111,14 @@ class _PDFViewerState extends State<PDFViewer> {
     setState(() {
       _isLoading = true;
     });
-    final data = await widget.document
-        .get(page: _pageNumber, onZoomChanged: onZoomChanged);
+    final data = await widget.document.get(
+      page: _pageNumber,
+      onZoomChanged: onZoomChanged,
+      zoomSteps: widget.zoomSteps,
+      minScale: widget.minScale,
+      maxScale: widget.maxScale,
+      panLimit: widget.panLimit,
+    );
     _pages[_pageNumber - 1] = data;
     if (mounted) {
       setState(() {

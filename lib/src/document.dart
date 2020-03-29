@@ -80,8 +80,14 @@ class PDFDocument {
   /// Load specific page
   ///
   /// [page] defaults to `1` and must be equal or above it
-  Future<PDFPage> get(
-      {int page = 1, final Function(double) onZoomChanged}) async {
+  Future<PDFPage> get({
+    int page = 1,
+    final Function(double) onZoomChanged,
+    final int zoomSteps,
+    final double minScale,
+    final double maxScale,
+    final double panLimit,
+  }) async {
     assert(page > 0);
     if (_preloaded && _pages.isNotEmpty) return _pages[page - 1];
     var data = await _channel
@@ -90,10 +96,20 @@ class PDFDocument {
       data,
       page,
       onZoomChanged: onZoomChanged,
+      zoomSteps: zoomSteps,
+      minScale: minScale,
+      maxScale: maxScale,
+      panLimit: panLimit,
     );
   }
 
-  Future<void> preloadPages({final Function(double) onZoomChanged}) async {
+  Future<void> preloadPages({
+    final Function(double) onZoomChanged,
+    final int zoomSteps,
+    final double minScale,
+    final double maxScale,
+    final double panLimit,
+  }) async {
     int countvar = 1;
     await Future.forEach<int>(List(count), (i) async {
       final data = await _channel.invokeMethod(
@@ -102,6 +118,10 @@ class PDFDocument {
         data,
         countvar,
         onZoomChanged: onZoomChanged,
+        zoomSteps: zoomSteps,
+        minScale: minScale,
+        maxScale: maxScale,
+        panLimit: panLimit,
       ));
       countvar++;
     });
