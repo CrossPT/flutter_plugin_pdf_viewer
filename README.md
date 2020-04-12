@@ -1,12 +1,12 @@
-# flutter_plugin_pdf_viewer
+# advance_pdf_viewer
 
-A flutter plugin for handling PDF files. Works on both Android & iOS
+A flutter plugin for handling PDF files. Works on both Android & iOS. Originally forked from (https://github.com/CrossPT/flutter_plugin_pdf_viewer).
 
 ## Installation
 
-Add  *flutter_plugin_pdf_viewer*  as a dependency in [your pubspec.yaml file](https://flutter.io/platform-plugins/).
+Add  *advance_pdf_viewer*  as a dependency in [your pubspec.yaml file](https://flutter.io/platform-plugins/).
 ```
-flutter_plugin_pdf_viewer: any
+advance_pdf_viewer: any
 ```
 
 ---
@@ -57,7 +57,7 @@ Use the pre-built PDF Viewer
 
 This code produces the following view:
 
-<img height="500px" src="https://raw.githubusercontent.com/CrossPT/flutter_pdf_viewer/master/demo.png" alt="Demo Screenshot 1"/>
+<img height="500px" src="https://raw.githubusercontent.com/lohanidamodar/pdf_viewer/master/demo.png" alt="Demo Screenshot 1"/>
 
 ---
 
@@ -66,7 +66,7 @@ This code produces the following view:
 * Allow password-protected files
 * ~~Refactor PDFDocument.getAll() method~~
 * ~~Increase page resolution~~
-* Add swipe to change page
+* ~~Add swipe to change page~~
 
 ---
 

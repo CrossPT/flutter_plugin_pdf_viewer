@@ -7,7 +7,8 @@ import 'package:flutter_advanced_networkimage/zoomable.dart';
 class PDFPage extends StatefulWidget {
   final String imgPath;
   final int num;
-  PDFPage(this.imgPath, this.num);
+  final Function(double) onZoomChanged;
+  PDFPage(this.imgPath, this.num, {this.onZoomChanged});
 
   @override
   _PDFPageState createState() => _PDFPageState();
@@ -43,10 +44,11 @@ class _PDFPageState extends State<PDFPage> {
     return Container(
         decoration: null,
         child: ZoomableWidget(
+          onZoomChanged: widget.onZoomChanged,
           zoomSteps: 3,
           minScale: 1.0,
-          panLimit: 0.8,
-          maxScale: 3.0,
+          panLimit: 1.0,
+          maxScale: 5.0,
           child: Image(image: provider),
         ));
   }
