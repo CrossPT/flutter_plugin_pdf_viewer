@@ -86,7 +86,7 @@ class PDFDocument {
   }
 
   // Stream all pages
-  Observable<PDFPage> getAll() {
+  Stream<PDFPage> getAll() {
     return Future.forEach<PDFPage>(List(count), (i) async {
       print(i);
       final data = await _channel
