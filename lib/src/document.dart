@@ -59,7 +59,7 @@ class PDFDocument {
       file = File("${dir.path}/file.pdf");
       var data = await rootBundle.load(asset);
       var bytes = data.buffer.asUint8List();
-      await file.writeAsBytes(bytes, flush: true);
+      file.writeAsBytesSync(bytes, flush: true);
     } catch (e) {
       throw Exception('Error parsing asset file!');
     }
