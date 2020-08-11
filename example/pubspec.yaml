@@ -1,5 +1,5 @@
-name: flutter_plugin_pdf_viewer_example
-description: Demonstrates how to use the flutter_plugin_pdf_viewer plugin.
+name: advance_pdf_viewer_example
+description: Demonstrates how to use the advance_pdf_viewer plugin.
 publish_to: 'none'
 
 environment:
@@ -12,13 +12,13 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^0.1.2
+  advance_pdf_viewer:
+    path: ../
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  flutter_plugin_pdf_viewer:
-    path: ../
 
 flutter:
   uses-material-design: true
