@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.2.0
+* updated to work with Flutter 1.20+
+
 ## 1.1.6
 * Exposing `ZoomableWidget` from [flutter_advanced_networkimage](https://pub.dartlang.org/packages/flutter_advanced_networkimage) parameters (minScale, zoomSteps, maxScale,panLimit)
 
