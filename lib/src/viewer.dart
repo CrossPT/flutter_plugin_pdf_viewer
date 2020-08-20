@@ -8,6 +8,8 @@ class PDFViewer extends StatefulWidget {
   final PDFDocument document;
   final Color indicatorText;
   final Color indicatorBackground;
+  final Color pickerButtonColor;
+  final Color pickerIconColor;
   final IndicatorPosition indicatorPosition;
   final bool showIndicator;
   final bool showPicker;
@@ -29,6 +31,7 @@ class PDFViewer extends StatefulWidget {
     void Function({int page}) jumpToPage,
     void Function({int page}) animateToPage,
   ) navigationBuilder;
+  final Widget progressIndicator;
 
   PDFViewer(
       {Key key,
@@ -48,7 +51,10 @@ class PDFViewer extends StatefulWidget {
       this.zoomSteps,
       this.minScale,
       this.maxScale,
-      this.panLimit})
+      this.panLimit,
+      this.progressIndicator,
+      this.pickerButtonColor,
+      this.pickerIconColor})
       : super(key: key);
 
   _PDFViewerState createState() => _PDFViewerState();
@@ -205,7 +211,8 @@ class _PDFViewerState extends State<PDFViewer> {
             itemCount: _pages?.length ?? 0,
             itemBuilder: (context, index) => _pages[index] == null
                 ? Center(
-                    child: CircularProgressIndicator(),
+                    child:
+                        widget.progressIndicator ?? CircularProgressIndicator(),
                   )
                 : _pages[index],
           ),
@@ -218,7 +225,11 @@ class _PDFViewerState extends State<PDFViewer> {
           ? FloatingActionButton(
               elevation: 4.0,
               tooltip: widget.tooltip.jump,
-              child: Icon(Icons.view_carousel),
+              child: Icon(
+                Icons.view_carousel,
+                color: widget.pickerIconColor ?? Colors.white,
+              ),
+              backgroundColor: widget.pickerButtonColor ?? Colors.blue,
               onPressed: () {
                 _pickPage();
               },
