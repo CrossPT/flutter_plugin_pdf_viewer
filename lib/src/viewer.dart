@@ -197,7 +197,7 @@ class _PDFViewerState extends State<PDFViewer> {
       body: Stack(
         children: <Widget>[
           PageView.builder(
-            physics: _swipeEnabled && widget.enableSwipeNavigation
+            physics: _swipeEnabled && widget.enableSwipeNavigation  && !_isLoading
                 ? null
                 : NeverScrollableScrollPhysics(),
             onPageChanged: (page) {
@@ -253,7 +253,7 @@ class _PDFViewerState extends State<PDFViewer> {
                         child: IconButton(
                           icon: Icon(Icons.first_page),
                           tooltip: widget.tooltip.first,
-                          onPressed: _pageNumber == 1
+                          onPressed: _pageNumber == 1 || _isLoading
                               ? null
                               : () {
                                   _pageNumber = 1;
@@ -265,7 +265,7 @@ class _PDFViewerState extends State<PDFViewer> {
                         child: IconButton(
                           icon: Icon(Icons.chevron_left),
                           tooltip: widget.tooltip.previous,
-                          onPressed: _pageNumber == 1
+                          onPressed: _pageNumber == 1 || _isLoading
                               ? null
                               : () {
                                   _pageNumber--;
@@ -282,8 +282,8 @@ class _PDFViewerState extends State<PDFViewer> {
                       Expanded(
                         child: IconButton(
                           icon: Icon(Icons.chevron_right),
-                          tooltip: widget.tooltip.next,
-                          onPressed: _pageNumber == widget.document.count
+                          tooltip: widget.tooltip.next, 
+                          onPressed: _pageNumber == widget.document.count || _isLoading
                               ? null
                               : () {
                                   _pageNumber++;
@@ -298,7 +298,7 @@ class _PDFViewerState extends State<PDFViewer> {
                         child: IconButton(
                           icon: Icon(Icons.last_page),
                           tooltip: widget.tooltip.last,
-                          onPressed: _pageNumber == widget.document.count
+                          onPressed: _pageNumber == widget.document.count || _isLoading
                               ? null
                               : () {
                                   _pageNumber = widget.document.count;
