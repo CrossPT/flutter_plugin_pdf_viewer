@@ -23,6 +23,7 @@ class PDFViewer extends StatefulWidget {
   final double minScale;
   final double maxScale;
   final double panLimit;
+  final ValueChanged<int> onPageChanged;
 
   final Widget Function(
     BuildContext,
@@ -33,29 +34,30 @@ class PDFViewer extends StatefulWidget {
   ) navigationBuilder;
   final Widget progressIndicator;
 
-  PDFViewer(
-      {Key key,
-      @required this.document,
-      this.scrollDirection,
-      this.lazyLoad = true,
-      this.indicatorText = Colors.white,
-      this.indicatorBackground = Colors.black54,
-      this.showIndicator = true,
-      this.showPicker = true,
-      this.showNavigation = true,
-      this.enableSwipeNavigation = true,
-      this.tooltip = const PDFViewerTooltip(),
-      this.navigationBuilder,
-      this.controller,
-      this.indicatorPosition = IndicatorPosition.topRight,
-      this.zoomSteps,
-      this.minScale,
-      this.maxScale,
-      this.panLimit,
-      this.progressIndicator,
-      this.pickerButtonColor,
-      this.pickerIconColor})
-      : super(key: key);
+  PDFViewer({
+    Key key,
+    @required this.document,
+    this.scrollDirection,
+    this.lazyLoad = true,
+    this.indicatorText = Colors.white,
+    this.indicatorBackground = Colors.black54,
+    this.showIndicator = true,
+    this.showPicker = true,
+    this.showNavigation = true,
+    this.enableSwipeNavigation = true,
+    this.tooltip = const PDFViewerTooltip(),
+    this.navigationBuilder,
+    this.controller,
+    this.indicatorPosition = IndicatorPosition.topRight,
+    this.zoomSteps,
+    this.minScale,
+    this.maxScale,
+    this.panLimit,
+    this.progressIndicator,
+    this.pickerButtonColor,
+    this.pickerIconColor,
+    this.onPageChanged,
+  }) : super(key: key);
 
   _PDFViewerState createState() => _PDFViewerState();
 }
@@ -197,14 +199,16 @@ class _PDFViewerState extends State<PDFViewer> {
       body: Stack(
         children: <Widget>[
           PageView.builder(
-            physics: _swipeEnabled && widget.enableSwipeNavigation  && !_isLoading
-                ? null
-                : NeverScrollableScrollPhysics(),
+            physics:
+                _swipeEnabled && widget.enableSwipeNavigation && !_isLoading
+                    ? null
+                    : NeverScrollableScrollPhysics(),
             onPageChanged: (page) {
               setState(() {
                 _pageNumber = page + 1;
               });
               _loadPage();
+              widget.onPageChanged(page);
             },
             scrollDirection: widget.scrollDirection ?? Axis.horizontal,
             controller: _pageController,
@@ -282,28 +286,30 @@ class _PDFViewerState extends State<PDFViewer> {
                       Expanded(
                         child: IconButton(
                           icon: Icon(Icons.chevron_right),
-                          tooltip: widget.tooltip.next, 
-                          onPressed: _pageNumber == widget.document.count || _isLoading
-                              ? null
-                              : () {
-                                  _pageNumber++;
-                                  if (widget.document.count < _pageNumber) {
-                                    _pageNumber = widget.document.count;
-                                  }
-                                  _animateToPage();
-                                },
+                          tooltip: widget.tooltip.next,
+                          onPressed:
+                              _pageNumber == widget.document.count || _isLoading
+                                  ? null
+                                  : () {
+                                      _pageNumber++;
+                                      if (widget.document.count < _pageNumber) {
+                                        _pageNumber = widget.document.count;
+                                      }
+                                      _animateToPage();
+                                    },
                         ),
                       ),
                       Expanded(
                         child: IconButton(
                           icon: Icon(Icons.last_page),
                           tooltip: widget.tooltip.last,
-                          onPressed: _pageNumber == widget.document.count || _isLoading
-                              ? null
-                              : () {
-                                  _pageNumber = widget.document.count;
-                                  _jumpToPage();
-                                },
+                          onPressed:
+                              _pageNumber == widget.document.count || _isLoading
+                                  ? null
+                                  : () {
+                                      _pageNumber = widget.document.count;
+                                      _jumpToPage();
+                                    },
                         ),
                       ),
                     ],
