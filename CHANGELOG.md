@@ -1,4 +1,6 @@
 # Changelog
+## 1.2.1+1
+* fix error null `onPageChanged` error
 
 ## 1.2.1
 * Dependencies upgraded to latest
