@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.1
+* Dependencies upgraded to latest
+* `cacheManager` optional parameter in `PDFDocument.fromURL` method to configure cache options.
+
 ## 1.2.0
 * updated to work with Flutter 1.20+
 
