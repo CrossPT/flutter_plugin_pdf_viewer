@@ -208,7 +208,7 @@ class _PDFViewerState extends State<PDFViewer> {
                 _pageNumber = page + 1;
               });
               _loadPage();
-              widget.onPageChanged(page);
+              widget.onPageChanged?.call(page);
             },
             scrollDirection: widget.scrollDirection ?? Axis.horizontal,
             controller: _pageController,
