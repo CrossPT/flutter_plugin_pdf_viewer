@@ -30,7 +30,15 @@ class _MyAppState extends State<MyApp> {
       document = await PDFDocument.fromAsset('assets/sample2.pdf');
     } else if (value == 2) {
       document = await PDFDocument.fromURL(
-          "http://conorlastowka.com/book/CitationNeededBook-Sample.pdf");
+        "http://conorlastowka.com/book/CitationNeededBook-Sample.pdf",
+        /* cacheManager: CacheManager(
+          Config(
+            "customCacheKey",
+            stalePeriod: const Duration(days: 2),
+            maxNrOfCacheObjects: 10,
+          ),
+        ), */
+      );
     } else {
       document = await PDFDocument.fromAsset('assets/sample.pdf');
     }
