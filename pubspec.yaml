@@ -12,7 +12,7 @@ dependencies:
     sdk: flutter
   flutter_cache_manager: ^1.0.0
   path_provider: ^1.1.0
-  rxdart: ^0.21.0
+  rxdart: ^0.24.1
   numberpicker: ^1.0.0
   flutter_advanced_networkimage: ^0.5.0
 
