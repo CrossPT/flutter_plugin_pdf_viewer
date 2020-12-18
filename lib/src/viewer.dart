@@ -11,6 +11,7 @@ class PDFViewer extends StatefulWidget {
   final Color pickerButtonColor;
   final Color pickerIconColor;
   final IndicatorPosition indicatorPosition;
+  final Widget numberPickerConfirmWidget;
   final bool showIndicator;
   final bool showPicker;
   final bool showNavigation;
@@ -41,6 +42,7 @@ class PDFViewer extends StatefulWidget {
     this.lazyLoad = true,
     this.indicatorText = Colors.white,
     this.indicatorBackground = Colors.black54,
+    this.numberPickerConfirmWidget = const Text('OK'),
     this.showIndicator = true,
     this.showPicker = true,
     this.showNavigation = true,
@@ -182,6 +184,7 @@ class _PDFViewerState extends State<PDFViewer> {
             title: Text(widget.tooltip.pick),
             minValue: 1,
             cancelWidget: Container(),
+            confirmWidget: widget.numberPickerConfirmWidget,
             maxValue: widget.document.count,
             initialIntegerValue: _pageNumber,
           );
