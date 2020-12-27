@@ -16,14 +16,14 @@ class PDFDocument {
   bool _preloaded = false;
 
   /// Load a PDF File from a given File
+  /// [File file], file to be loaded
   ///
-  ///
-  static Future<PDFDocument> fromFile(File f) async {
+  static Future<PDFDocument> fromFile(File file) async {
     PDFDocument document = PDFDocument();
-    document._filePath = f.path;
+    document._filePath = file.path;
     try {
       var pageCount =
-          await _channel.invokeMethod('getNumberOfPages', {'filePath': f.path});
+          await _channel.invokeMethod('getNumberOfPages', {'filePath': file.path});
       document.count = document.count = int.parse(pageCount);
     } catch (e) {
       throw Exception('Error reading PDF!');
@@ -33,7 +33,10 @@ class PDFDocument {
 
   /// Load a PDF File from a given URL.
   /// File is saved in cache
-  ///
+  /// [String url] url of the pdf file
+  /// [Map<String,String headers] headers to pass for the [url]
+  /// [CacheManager cacheManager] to provide configuration for 
+  /// cache management
   static Future<PDFDocument> fromURL(String url,
       {Map<String, String> headers, CacheManager cacheManager}) async {
     // Download into cache
@@ -52,10 +55,9 @@ class PDFDocument {
   }
 
   /// Load a PDF File from assets folder
-  ///
+  /// [String asset] path of the asset to be loaded
   ///
   static Future<PDFDocument> fromAsset(String asset) async {
-    // To open from assets, you can copy them to the app storage folder, and the access them "locally"
     File file;
     try {
       var dir = await getApplicationDocumentsDirectory();

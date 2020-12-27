@@ -1,4 +1,8 @@
 # Changelog
+
+## 1.2.1+2
+* dart doc comments improvement
+
 ## 1.2.1+1
 * fix error null `onPageChanged` error
 
