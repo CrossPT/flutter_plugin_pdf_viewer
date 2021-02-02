@@ -337,7 +337,7 @@ class _PDFViewerState extends State<PDFViewer> {
                     ],
                   ),
                 )
-          : Container(),
+          : Container(height: 0,),
     );
   }
 }
