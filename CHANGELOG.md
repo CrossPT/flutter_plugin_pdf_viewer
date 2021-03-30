@@ -1,4 +1,11 @@
 # Changelog
+
+## 1.2.2
+* fix error with single page pdf
+
+## 1.2.1+2
+* dart doc comments improvement
+
 ## 1.2.1+1
 * fix error null `onPageChanged` error
 

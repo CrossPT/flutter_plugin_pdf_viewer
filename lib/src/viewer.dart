@@ -1,9 +1,32 @@
+import 'package:advance_pdf_viewer/src/page_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:advance_pdf_viewer/advance_pdf_viewer.dart';
 import 'package:numberpicker/numberpicker.dart';
 
+/// enum to describe indicator position
 enum IndicatorPosition { topLeft, topRight, bottomLeft, bottomRight }
 
+/// PDFViewer, a inbuild pdf viewer, you can create your own too.
+/// [document] an instance of `PDFDocument`, document to be loaded
+/// [indicatorText] color of indicator text
+/// [indicatorBackground] color of indicator background
+/// [pickerButtonColor] the picker button background color
+/// [pickerIconColor] the picker button icon color
+/// [indicatorPosition] position of the indicator position defined by `IndicatorPosition` enum
+/// [showIndicator] show,hide indicator
+/// [showPicker] show hide picker
+/// [showNavigation] show hide navigation bar
+/// [toolTip] tooltip, instance of `PDFViewerTooltip`
+/// [enableSwipeNavigation] enable,disable swipe navigation
+/// [scrollDirection] scroll direction horizontal or vertical
+/// [lazyLoad] lazy load pages or load all at once
+/// [controller] page controller to control page viewer
+/// [zoomSteps] zoom steps for pdf page
+/// [minScale] minimum zoom scale for pdf page
+/// [maxScale] maximum zoom scale for pdf page
+/// [panLimit] pan limit for pdf page
+/// [onPageChanged] function called when page changes
+///
 class PDFViewer extends StatefulWidget {
   final PDFDocument document;
   final Color indicatorText;
@@ -180,16 +203,10 @@ class _PDFViewerState extends State<PDFViewer> {
     showDialog<int>(
         context: context,
         builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text(widget.tooltip.pick),
-            content: NumberPicker(
-              minValue: 1,
-              maxValue: widget.document.count,
-              value: _pageNumber,
-              onChanged: (int value) {
-                Navigator.pop(context, value);
-              },
-            ),
+          return PagePicker(
+            title: widget.tooltip.pick,
+            maxValue: widget.document.count,
+            initialValue: _pageNumber,
           );
         }).then((int value) {
       if (value != null) {
@@ -321,7 +338,9 @@ class _PDFViewerState extends State<PDFViewer> {
                     ],
                   ),
                 )
-          : Container(),
+          : Container(
+              height: 0,
+            ),
     );
   }
 }
