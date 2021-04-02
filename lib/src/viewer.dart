@@ -25,7 +25,7 @@ enum IndicatorPosition { topLeft, topRight, bottomLeft, bottomRight }
 /// [maxScale] maximum zoom scale for pdf page
 /// [panLimit] pan limit for pdf page
 /// [onPageChanged] function called when page changes
-/// 
+///
 class PDFViewer extends StatefulWidget {
   final PDFDocument document;
   final Color indicatorText;
@@ -158,8 +158,7 @@ class _PDFViewerState extends State<PDFViewer> {
   }
 
   _animateToPage({int page}) {
-    _pageController.animateToPage(page != null ? page : _pageNumber - 1,
-        duration: animationDuration, curve: animationCurve);
+    _pageController.animateToPage(page != null ? page : _pageNumber - 1, duration: animationDuration, curve: animationCurve);
   }
 
   _jumpToPage({int page}) {
@@ -168,19 +167,12 @@ class _PDFViewerState extends State<PDFViewer> {
 
   Widget _drawIndicator() {
     Widget child = GestureDetector(
-        onTap:
-            widget.showPicker && widget.document.count > 1 ? _pickPage : null,
+        onTap: widget.showPicker && widget.document.count > 1 ? _pickPage : null,
         child: Container(
-            padding:
-                EdgeInsets.only(top: 4.0, left: 16.0, bottom: 4.0, right: 16.0),
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(4.0),
-                color: widget.indicatorBackground),
+            padding: EdgeInsets.only(top: 4.0, left: 16.0, bottom: 4.0, right: 16.0),
+            decoration: BoxDecoration(borderRadius: BorderRadius.circular(4.0), color: widget.indicatorBackground),
             child: Text("$_pageNumber/${widget.document.count}",
-                style: TextStyle(
-                    color: widget.indicatorText,
-                    fontSize: 16.0,
-                    fontWeight: FontWeight.w400))));
+                style: TextStyle(color: widget.indicatorText, fontSize: 16.0, fontWeight: FontWeight.w400))));
 
     switch (widget.indicatorPosition) {
       case IndicatorPosition.topLeft:
@@ -221,10 +213,7 @@ class _PDFViewerState extends State<PDFViewer> {
       body: Stack(
         children: <Widget>[
           PageView.builder(
-            physics:
-                _swipeEnabled && widget.enableSwipeNavigation && !_isLoading
-                    ? null
-                    : NeverScrollableScrollPhysics(),
+            physics: _swipeEnabled && widget.enableSwipeNavigation && !_isLoading ? null : NeverScrollableScrollPhysics(),
             onPageChanged: (page) {
               setState(() {
                 _pageNumber = page + 1;
@@ -237,14 +226,11 @@ class _PDFViewerState extends State<PDFViewer> {
             itemCount: _pages?.length ?? 0,
             itemBuilder: (context, index) => _pages[index] == null
                 ? Center(
-                    child:
-                        widget.progressIndicator ?? CircularProgressIndicator(),
+                    child: widget.progressIndicator ?? CircularProgressIndicator(),
                   )
                 : _pages[index],
           ),
-          (widget.showIndicator && !_isLoading)
-              ? _drawIndicator()
-              : Container(),
+          (widget.showIndicator && !_isLoading) ? _drawIndicator() : Container(),
         ],
       ),
       floatingActionButton: widget.showPicker && widget.document.count > 1
@@ -302,42 +288,40 @@ class _PDFViewerState extends State<PDFViewer> {
                                 },
                         ),
                       ),
-                      widget.showPicker
-                          ? Expanded(child: Text(''))
-                          : SizedBox(width: 1),
+                      widget.showPicker ? Expanded(child: Text('')) : SizedBox(width: 1),
                       Expanded(
                         child: IconButton(
                           icon: Icon(Icons.chevron_right),
                           tooltip: widget.tooltip.next,
-                          onPressed:
-                              _pageNumber == widget.document.count || _isLoading
-                                  ? null
-                                  : () {
-                                      _pageNumber++;
-                                      if (widget.document.count < _pageNumber) {
-                                        _pageNumber = widget.document.count;
-                                      }
-                                      _animateToPage();
-                                    },
+                          onPressed: _pageNumber == widget.document.count || _isLoading
+                              ? null
+                              : () {
+                                  _pageNumber++;
+                                  if (widget.document.count < _pageNumber) {
+                                    _pageNumber = widget.document.count;
+                                  }
+                                  _animateToPage();
+                                },
                         ),
                       ),
                       Expanded(
                         child: IconButton(
                           icon: Icon(Icons.last_page),
                           tooltip: widget.tooltip.last,
-                          onPressed:
-                              _pageNumber == widget.document.count || _isLoading
-                                  ? null
-                                  : () {
-                                      _pageNumber = widget.document.count;
-                                      _jumpToPage();
-                                    },
+                          onPressed: _pageNumber == widget.document.count || _isLoading
+                              ? null
+                              : () {
+                                  _pageNumber = widget.document.count;
+                                  _jumpToPage();
+                                },
                         ),
                       ),
                     ],
                   ),
                 )
-          : Container(height: 0,),
+          : Container(
+              height: 0,
+            ),
     );
   }
 }
