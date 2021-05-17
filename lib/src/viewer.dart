@@ -1,3 +1,4 @@
+import 'package:advance_pdf_viewer/src/page_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:advance_pdf_viewer/advance_pdf_viewer.dart';
 import 'package:numberpicker/numberpicker.dart';
@@ -25,7 +26,7 @@ enum IndicatorPosition { topLeft, topRight, bottomLeft, bottomRight }
 /// [maxScale] maximum zoom scale for pdf page
 /// [panLimit] pan limit for pdf page
 /// [onPageChanged] function called when page changes
-/// 
+///
 class PDFViewer extends StatefulWidget {
   final PDFDocument document;
   final Color indicatorText;
@@ -33,6 +34,7 @@ class PDFViewer extends StatefulWidget {
   final Color pickerButtonColor;
   final Color pickerIconColor;
   final IndicatorPosition indicatorPosition;
+  final Widget numberPickerConfirmWidget;
   final bool showIndicator;
   final bool showPicker;
   final bool showNavigation;
@@ -63,6 +65,7 @@ class PDFViewer extends StatefulWidget {
     this.lazyLoad = true,
     this.indicatorText = Colors.white,
     this.indicatorBackground = Colors.black54,
+    this.numberPickerConfirmWidget = const Text('OK'),
     this.showIndicator = true,
     this.showPicker = true,
     this.showNavigation = true,
@@ -200,12 +203,10 @@ class _PDFViewerState extends State<PDFViewer> {
     showDialog<int>(
         context: context,
         builder: (BuildContext context) {
-          return NumberPickerDialog.integer(
-            title: Text(widget.tooltip.pick),
-            minValue: 1,
-            cancelWidget: Container(),
+          return PagePicker(
+            title: widget.tooltip.pick,
             maxValue: widget.document.count,
-            initialIntegerValue: _pageNumber,
+            initialValue: _pageNumber,
           );
         }).then((int value) {
       if (value != null) {
@@ -337,7 +338,9 @@ class _PDFViewerState extends State<PDFViewer> {
                     ],
                   ),
                 )
-          : Container(height: 0,),
+          : Container(
+              height: 0,
+            ),
     );
   }
 }
