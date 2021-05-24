@@ -1,4 +1,8 @@
 # Changelog
+# 2.0.0
+* Null safety upgrade
+* Fixed some issues
+* new `numberPickerConfirmWidget`
 
 ## 1.2.2
 * fix error with single page pdf
