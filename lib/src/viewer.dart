@@ -144,8 +144,9 @@ class _PDFViewerState extends State<PDFViewer> {
     if (mounted) setState(() => _isLoading = false);
   }
 
-  void _animateToPage({int? page}) {
+   void _animateToPage({int? page}) {
     _pageController.animateToPage(page ?? _pageNumber - 1, duration: animationDuration, curve: animationCurve);
+ 
   }
 
   void _jumpToPage({int? page}) {
@@ -153,6 +154,7 @@ class _PDFViewerState extends State<PDFViewer> {
   }
 
   Widget _drawIndicator() {
+
     final child = GestureDetector(
         onTap: widget.showPicker && widget.document.count > 1 ? _pickPage : null,
         child: Container(
@@ -162,6 +164,7 @@ class _PDFViewerState extends State<PDFViewer> {
               bottom: 4.0,
               right: 16.0,
             ),
+
             decoration: BoxDecoration(borderRadius: BorderRadius.circular(4.0), color: widget.indicatorBackground),
             child: Text("$_pageNumber/${widget.document.count}",
                 style: TextStyle(color: widget.indicatorText, fontSize: 16.0, fontWeight: FontWeight.w400))));
@@ -202,7 +205,8 @@ class _PDFViewerState extends State<PDFViewer> {
       body: Stack(
         children: <Widget>[
           PageView.builder(
-            physics: _swipeEnabled && widget.enableSwipeNavigation && !_isLoading ? null : const NeverScrollableScrollPhysics(),
+             physics: _swipeEnabled && widget.enableSwipeNavigation && !_isLoading ? null : const NeverScrollableScrollPhysics(),
+ 
             onPageChanged: (page) {
               setState(() => _pageNumber = page + 1);
               _loadPage();
@@ -213,11 +217,13 @@ class _PDFViewerState extends State<PDFViewer> {
             itemCount: _pages?.length ?? 0,
             itemBuilder: (context, index) => _pages![index] == null
                 ? Center(
-                    child: widget.progressIndicator ?? const CircularProgressIndicator.adaptive(),
+                     child: widget.progressIndicator ?? const CircularProgressIndicator.adaptive(),
+ 
                   )
                 : _pages![index]!,
           ),
-          if (widget.showIndicator && !_isLoading) _drawIndicator(),
+           if (widget.showIndicator && !_isLoading) _drawIndicator(),
+ 
         ],
       ),
       floatingActionButton: widget.showPicker && widget.document.count > 1
@@ -275,7 +281,9 @@ class _PDFViewerState extends State<PDFViewer> {
                                 },
                         ),
                       ),
+ 
                       if (widget.showPicker) const Spacer(),
+ 
                       Expanded(
                         child: IconButton(
                           icon: const Icon(Icons.chevron_right),

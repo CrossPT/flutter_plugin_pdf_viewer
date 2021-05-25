@@ -16,6 +16,7 @@ dependencies:
 dev_dependencies:
   lint: ^1.5.3
 
+
 flutter:
   plugin:
     platforms:
