@@ -5,7 +5,7 @@ import 'package:flutter/widgets.dart';
 
 class ZoomableWidget extends StatefulWidget {
   ZoomableWidget({
-    Key key,
+    Key? key,
     this.minScale: 0.7,
     this.maxScale: 1.4,
     this.initialScale: 1.0,
@@ -73,10 +73,10 @@ class ZoomableWidget extends StatefulWidget {
   final double panLimit;
 
   /// The child widget that is display.
-  final Widget child;
+  final Widget? child;
 
   /// Tap callback for this widget.
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
   /// Allow users to zoom with double tap steps by steps.
   final int zoomSteps;
@@ -94,7 +94,7 @@ class ZoomableWidget extends StatefulWidget {
   final double flingFactor;
 
   /// When the scale value changed, the callback will be invoked.
-  final ValueChanged<double> onZoomChanged;
+  final ValueChanged<double>? onZoomChanged;
 
   /// The duration of reset animation.
   final Duration resetDuration;
@@ -133,7 +133,7 @@ class _ZoomableWidgetState extends State<ZoomableWidget> {
 
   void _onScaleStart(ScaleStartDetails details) {
     if (_childSize == Size.zero) {
-      final RenderBox renderbox = _key.currentContext.findRenderObject();
+      final RenderBox renderbox = _key.currentContext!.findRenderObject() as RenderBox;
       _childSize = renderbox.size;
     }
     setState(() {
@@ -158,7 +158,7 @@ class _ZoomableWidgetState extends State<ZoomableWidget> {
       if (widget.enableZoom && details.scale != 1.0) {
         _zoom = (_previousZoom * details.scale)
             .clamp(widget.minScale, widget.maxScale);
-        if (widget.onZoomChanged != null) widget.onZoomChanged(_zoom);
+        if (widget.onZoomChanged != null) widget.onZoomChanged!(_zoom);
       }
     });
 
@@ -203,7 +203,7 @@ class _ZoomableWidgetState extends State<ZoomableWidget> {
     final double magnitude = velocity.distance;
     if (magnitude > 800.0 * _zoom && widget.enableFling) {
       final Offset direction = velocity / magnitude;
-      final double distance = (Offset.zero & context.size).shortestSide;
+      final double distance = (Offset.zero & context.size!).shortestSide;
       final Offset endOffset =
           _pan + direction * distance * widget.flingFactor * 0.5;
       _pan = Offset(
@@ -250,7 +250,7 @@ class _ZoomableWidgetState extends State<ZoomableWidget> {
 
     setState(() {
       _zoom = _tmpZoom;
-      if (widget.onZoomChanged != null) widget.onZoomChanged(_zoom);
+      if (widget.onZoomChanged != null) widget.onZoomChanged!(_zoom);
       _pan = Offset.zero;
       _rotation = 0.0;
       _previousZoom = _tmpZoom;
@@ -325,12 +325,12 @@ class _ZoomableWidgetLayout extends MultiChildLayoutDelegate {
 
 class _ZoomableChild extends ImplicitlyAnimatedWidget {
   const _ZoomableChild({
-    Duration duration,
+    required Duration duration,
     Curve curve = Curves.linear,
-    @required this.zoom,
-    @required this.panOffset,
-    @required this.rotation,
-    @required this.child,
+    required this.zoom,
+    required this.panOffset,
+    required this.rotation,
+    required this.child,
   }) : super(duration: duration, curve: curve);
 
   final double zoom;
@@ -344,49 +344,49 @@ class _ZoomableChild extends ImplicitlyAnimatedWidget {
 }
 
 class _ZoomableChildState extends AnimatedWidgetBaseState<_ZoomableChild> {
-  DoubleTween _zoom;
-  OffsetTween _panOffset;
+  DoubleTween? _zoom;
+  OffsetTween? _panOffset;
   // OffsetTween _zoomOriginOffset;
-  DoubleTween _rotation;
+  DoubleTween? _rotation;
 
   @override
   void forEachTween(visitor) {
     _zoom = visitor(
-        _zoom, widget.zoom, (dynamic value) => DoubleTween(begin: value));
+        _zoom, widget.zoom, (dynamic value) => DoubleTween(begin: value)) as DoubleTween?;
     _panOffset = visitor(_panOffset, widget.panOffset,
-        (dynamic value) => OffsetTween(begin: value));
+        (dynamic value) => OffsetTween(begin: value)) as OffsetTween?;
     _rotation = visitor(_rotation, widget.rotation,
-        (dynamic value) => DoubleTween(begin: value));
+        (dynamic value) => DoubleTween(begin: value)) as DoubleTween?;
   }
 
   @override
   Widget build(BuildContext context) {
     return Transform(
       alignment: Alignment.center,
-      origin: Offset(-_panOffset.evaluate(animation).dx,
-          -_panOffset.evaluate(animation).dy),
+      origin: Offset(-(_panOffset!.evaluate(animation)?.dx ?? 0),
+          -(_panOffset!.evaluate(animation)?.dy ?? 0)),
       transform: Matrix4.identity()
-        ..translate(_panOffset.evaluate(animation).dx,
-            _panOffset.evaluate(animation).dy)
-        ..scale(_zoom.evaluate(animation), _zoom.evaluate(animation)),
+        ..translate(_panOffset?.evaluate(animation)?.dx,
+            _panOffset?.evaluate(animation)?.dy ?? 0)
+        ..scale(_zoom!.evaluate(animation), _zoom!.evaluate(animation)),
       child: Transform.rotate(
-        angle: _rotation.evaluate(animation),
+        angle: _rotation!.evaluate(animation) ?? 0,
         child: widget.child,
       ),
     );
   }
 }
 
-class DoubleTween extends Tween<double> {
-  DoubleTween({double begin, double end}) : super(begin: begin, end: end);
+class DoubleTween extends Tween<double?> {
+  DoubleTween({double? begin, double? end}) : super(begin: begin, end: end);
 
   @override
-  double lerp(double t) => (begin + (end - begin) * t);
+  double lerp(double t) => (begin! + (end! - begin!) * t);
 }
 
-class OffsetTween extends Tween<Offset> {
-  OffsetTween({Offset begin, Offset end}) : super(begin: begin, end: end);
+class OffsetTween extends Tween<Offset?> {
+  OffsetTween({Offset? begin, Offset? end}) : super(begin: begin, end: end);
 
   @override
-  Offset lerp(double t) => (begin + (end - begin) * t);
+  Offset lerp(double t) => (begin! + (end! - begin!) * t);
 }

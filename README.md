@@ -44,16 +44,16 @@ PDFPage pageOne = await doc.get(page: _number);
 #### Pre-built viewer
 Use the pre-built PDF Viewer
 ```
-@override
+  @override
   Widget build(BuildContext context) {
-    Scaffold(
-        appBar: AppBar(
-          title: Text('Example'),
-        ),
-        body: Center(
-        child: _isLoading
-            ? Center(child: CircularProgressIndicator())
-            : PDFViewer(document: document)),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Example'),
+      ),
+      body: Center(
+          child: _isLoading
+              ? Center(child: CircularProgressIndicator())
+              : PDFViewer(document: document)),
     );
   }
 ```
