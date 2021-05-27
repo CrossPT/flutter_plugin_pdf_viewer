@@ -1,97 +1,115 @@
 package pt.tribeiro.flutter_plugin_pdf_viewer;
 
+import android.app.Activity;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.pdf.PdfRenderer;
-import android.os.Environment;
-import android.os.ParcelFileDescriptor;
+import android.os.*;
+import android.os.Process;
 import android.util.Log;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FilenameFilter;
-
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import io.flutter.embedding.engine.plugins.FlutterPlugin;
+import io.flutter.embedding.engine.plugins.activity.ActivityAware;
+import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
-import io.flutter.plugin.common.PluginRegistry.Registrar;
-import android.graphics.ColorMatrix;
-import android.graphics.ColorMatrixColorFilter;
-import android.os.HandlerThread;
-import android.os.Process;
-import android.os.Handler;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FilenameFilter;
+import java.util.Locale;
 
 /**
  * FlutterPluginPdfViewerPlugin
  */
-public class FlutterPluginPdfViewerPlugin implements MethodCallHandler {
-    private static Registrar instance;
-    private HandlerThread handlerThread;
+public class FlutterPluginPdfViewerPlugin implements FlutterPlugin, MethodCallHandler, ActivityAware {
+    private static final String TAG = "PdfViewerPlugin";
+
     private Handler backgroundHandler;
     private final Object pluginLocker = new Object();
     private final String filePrefix = "FlutterPluginPdfViewer";
 
-    /**
-     * Plugin registration.
-     */
-    public static void registerWith(Registrar registrar) {
-        final MethodChannel channel = new MethodChannel(registrar.messenger(), "flutter_plugin_pdf_viewer");
-        instance = registrar;
-        channel.setMethodCallHandler(new FlutterPluginPdfViewerPlugin());
+    /// The MethodChannel that will the communication between Flutter and native Android
+    ///
+    /// This local reference serves to register the plugin with the Flutter Engine and unregister it
+    /// when the Flutter Engine is detached from the Activity
+    private MethodChannel channel;
+    private Context context;
+    private Activity activity;
+
+    @Override
+    public void onAttachedToEngine(@NonNull FlutterPluginBinding binding) {
+        channel = new MethodChannel(binding.getBinaryMessenger(), "flutter_plugin_pdf_viewer");
+        channel.setMethodCallHandler(this);
+        context = binding.getApplicationContext();
     }
 
     @Override
-    public void onMethodCall(final MethodCall call, final Result result) {
+    public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
+        channel.setMethodCallHandler(null);
+    }
+
+    @Override
+    public void onMethodCall(@NonNull final MethodCall call, @NonNull final Result result) {
         synchronized (pluginLocker) {
             if (backgroundHandler == null) {
-                handlerThread = new HandlerThread("flutterPdfViewer", Process.THREAD_PRIORITY_BACKGROUND);
+                HandlerThread handlerThread = new HandlerThread("flutterPdfViewer", Process.THREAD_PRIORITY_BACKGROUND);
                 handlerThread.start();
                 backgroundHandler = new Handler(handlerThread.getLooper());
             }
         }
-        final Handler mainThreadHandler = new Handler();
-        backgroundHandler.post(//
+        final Handler mainThreadHandler = new Handler(Looper.myLooper());
+        backgroundHandler.post(
                 new Runnable() {
                     @Override
                     public void run() {
                         switch (call.method) {
-                        case "getNumberOfPages":
-                            final String numResult = getNumberOfPages((String) call.argument("filePath"));
-                            mainThreadHandler.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    result.success(numResult);
+                            case "getNumberOfPages":
+                                final String numResult = getNumberOfPages((String) call.argument("filePath"));
+                                mainThreadHandler.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        result.success(numResult);
+                                    }
+                                });
+                                break;
+                            case "getPage":
+                                Integer pageNumber = call.<Integer>argument("pageNumber");
+                                final String pageResult = getPage((String) call.argument("filePath"), pageNumber);
+                                if (pageResult == null) {
+                                    Log.d(TAG, "Retrieving page failed.");
+                                    result.notImplemented();
                                 }
-                            });
-                            break;
-                        case "getPage":
-                            final String pageResult = getPage((String) call.argument("filePath"),
-                                    (int) call.argument("pageNumber"));
-                            mainThreadHandler.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    result.success(pageResult);
-                                }
-                            });
-                            break;
-                        default:
-                            result.notImplemented();
-                            break;
+                                mainThreadHandler.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        result.success(pageResult);
+                                    }
+                                });
+                                break;
+                            default:
+                                result.notImplemented();
+                                break;
                         }
                     }
-                });
+                }
+        );
     }
 
     private String getNumberOfPages(String filePath) {
         File pdf = new File(filePath);
         try {
-            clearCacheDir();
+            if (!clearCacheDir()) {
+                Log.d("NumPages", "getNumberOfPages: failed to clean cache.");
+            }
             PdfRenderer renderer = new PdfRenderer(ParcelFileDescriptor.open(pdf, ParcelFileDescriptor.MODE_READ_ONLY));
-            Bitmap bitmap;
             final int pageCount = renderer.getPageCount();
-            return String.format("%d", pageCount);
+            return String.format(Locale.US, "%d", pageCount);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -100,7 +118,7 @@ public class FlutterPluginPdfViewerPlugin implements MethodCallHandler {
 
     private boolean clearCacheDir() {
         try {
-            File directory = instance.context().getCacheDir();
+            File directory = context.getCacheDir();
             FilenameFilter myFilter = new FilenameFilter() {
                 @Override
                 public boolean accept(File dir, String name) {
@@ -109,9 +127,10 @@ public class FlutterPluginPdfViewerPlugin implements MethodCallHandler {
             };
             File[] files = directory.listFiles(myFilter);
             // Log.d("Cache Files", "Size: " + files.length);
-            for (int i = 0; i < files.length; i++) {
-                // Log.d("Files", "FileName: " + files[i].getName());
-                files[i].delete();
+            for (File file : files != null ? files : new File[0]) {
+                if (!file.delete()) {
+                    Log.d("Cache files", String.format("Deleting file %s failed.", file.getName()));
+                }
             }
             return true;
         } catch (Exception ex) {
@@ -127,11 +146,15 @@ public class FlutterPluginPdfViewerPlugin implements MethodCallHandler {
     }
 
     private String createTempPreview(Bitmap bmp, String name, int page) {
+        if (context == null) {
+            Log.d(TAG, "createTempPreview: Context is null!");
+            return null;
+        }
         String fileNameOnly = getFileNameFromPath(name);
         File file;
         try {
-            String fileName = String.format("%s-%d.png", fileNameOnly, page);
-            file = File.createTempFile(fileName, null, instance.context().getCacheDir());
+            String fileName = String.format(Locale.US, "%s-%d.png", fileNameOnly, page);
+            file = File.createTempFile(fileName, null, context.getCacheDir());
             FileOutputStream out = new FileOutputStream(file);
             bmp.compress(Bitmap.CompressFormat.PNG, 100, out);
             out.flush();
@@ -143,19 +166,20 @@ public class FlutterPluginPdfViewerPlugin implements MethodCallHandler {
         return file.getAbsolutePath();
     }
 
-    private String getPage(String filePath, int pageNumber) {
+    private String getPage(String filePath, @Nullable Integer pageNumber) {
         File pdf = new File(filePath);
         try {
             PdfRenderer renderer = new PdfRenderer(ParcelFileDescriptor.open(pdf, ParcelFileDescriptor.MODE_READ_ONLY));
             final int pageCount = renderer.getPageCount();
-            if (pageNumber > pageCount) {
+            if (pageNumber == null || pageNumber > pageCount) {
                 pageNumber = pageCount;
             }
 
             PdfRenderer.Page page = renderer.openPage(--pageNumber);
 
-            double width = instance.context().getResources().getDisplayMetrics().densityDpi * page.getWidth();
-            double height = instance.context().getResources().getDisplayMetrics().densityDpi * page.getHeight();
+            final int densityDpi = activity.getResources().getDisplayMetrics().densityDpi;
+            double width = densityDpi * page.getWidth();
+            double height = densityDpi * page.getHeight();
             final double docRatio = width / height;
 
             width = 2048;
@@ -180,5 +204,25 @@ public class FlutterPluginPdfViewerPlugin implements MethodCallHandler {
         }
 
         return null;
+    }
+
+    @Override
+    public void onAttachedToActivity(@NonNull ActivityPluginBinding binding) {
+        activity = binding.getActivity();
+    }
+
+    @Override
+    public void onDetachedFromActivityForConfigChanges() {
+        activity = null;
+    }
+
+    @Override
+    public void onReattachedToActivityForConfigChanges(@NonNull ActivityPluginBinding binding) {
+        activity = binding.getActivity();
+    }
+
+    @Override
+    public void onDetachedFromActivity() {
+        activity = null;
     }
 }
