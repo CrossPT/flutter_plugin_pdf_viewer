@@ -6,8 +6,8 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.pdf.PdfRenderer;
-import android.os.*;
 import android.os.Process;
+import android.os.*;
 import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -20,6 +20,7 @@ import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.util.Locale;
@@ -102,12 +103,7 @@ public class FlutterPluginPdfViewerPlugin implements FlutterPlugin, MethodCallHa
     }
 
     private String getNumberOfPages(String filePath) {
-        File pdf = new File(filePath);
-        if (!pdf.canRead()) {
-            Log.d(TAG, "getPage: Can't read file: " + filePath);
-        }
-        try {
-            PdfRenderer renderer = new PdfRenderer(ParcelFileDescriptor.open(pdf, ParcelFileDescriptor.MODE_READ_ONLY));
+        try (PdfRenderer renderer = new PdfRenderer(getPdfFile(filePath))) {
             final int pageCount = renderer.getPageCount();
             if (!clearCacheDir()) {
                 Log.d("NumPages", "getNumberOfPages: failed to clean cache.");
@@ -117,6 +113,14 @@ public class FlutterPluginPdfViewerPlugin implements FlutterPlugin, MethodCallHa
             ex.printStackTrace();
         }
         return null;
+    }
+
+    private ParcelFileDescriptor getPdfFile(String filePath) throws FileNotFoundException {
+        File pdfFile = new File(filePath);
+        if (!pdfFile.canRead()) {
+            Log.d(TAG, "getPdfFile: Can't read file: " + filePath);
+        }
+        return ParcelFileDescriptor.open(pdfFile, ParcelFileDescriptor.MODE_READ_ONLY);
     }
 
     private boolean clearCacheDir() {
@@ -170,12 +174,7 @@ public class FlutterPluginPdfViewerPlugin implements FlutterPlugin, MethodCallHa
     }
 
     private String getPage(String filePath, @Nullable Integer pageNumber) {
-        File pdf = new File(filePath);
-        if (!pdf.canRead()) {
-            Log.d(TAG, "getPage: Can't read file: " + filePath);
-        }
-        try {
-            PdfRenderer renderer = new PdfRenderer(ParcelFileDescriptor.open(pdf, ParcelFileDescriptor.MODE_READ_ONLY));
+        try (PdfRenderer renderer = new PdfRenderer(getPdfFile(filePath))) {
             final int pageCount = renderer.getPageCount();
             if (pageNumber == null || pageNumber > pageCount) {
                 pageNumber = pageCount;
