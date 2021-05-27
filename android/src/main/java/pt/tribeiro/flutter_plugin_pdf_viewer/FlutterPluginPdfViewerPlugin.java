@@ -103,12 +103,15 @@ public class FlutterPluginPdfViewerPlugin implements FlutterPlugin, MethodCallHa
 
     private String getNumberOfPages(String filePath) {
         File pdf = new File(filePath);
+        if (!pdf.canRead()) {
+            Log.d(TAG, "getPage: Can't read file: " + filePath);
+        }
         try {
+            PdfRenderer renderer = new PdfRenderer(ParcelFileDescriptor.open(pdf, ParcelFileDescriptor.MODE_READ_ONLY));
+            final int pageCount = renderer.getPageCount();
             if (!clearCacheDir()) {
                 Log.d("NumPages", "getNumberOfPages: failed to clean cache.");
             }
-            PdfRenderer renderer = new PdfRenderer(ParcelFileDescriptor.open(pdf, ParcelFileDescriptor.MODE_READ_ONLY));
-            final int pageCount = renderer.getPageCount();
             return String.format(Locale.US, "%d", pageCount);
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -168,6 +171,9 @@ public class FlutterPluginPdfViewerPlugin implements FlutterPlugin, MethodCallHa
 
     private String getPage(String filePath, @Nullable Integer pageNumber) {
         File pdf = new File(filePath);
+        if (!pdf.canRead()) {
+            Log.d(TAG, "getPage: Can't read file: " + filePath);
+        }
         try {
             PdfRenderer renderer = new PdfRenderer(ParcelFileDescriptor.open(pdf, ParcelFileDescriptor.MODE_READ_ONLY));
             final int pageCount = renderer.getPageCount();
