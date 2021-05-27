@@ -195,19 +195,18 @@ public class FlutterPluginPdfViewerPlugin implements FlutterPlugin, MethodCallHa
             canvas.drawColor(Color.WHITE);
             // Render to bitmap
             page.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY);
+            String ret;
             try {
-                return createTempPreview(bitmap, filePath, pageNumber);
+                ret = createTempPreview(bitmap, filePath, pageNumber);
             } finally {
-                // close the page
                 page.close();
-                // close the renderer
                 renderer.close();
             }
+            return ret;
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
             ex.printStackTrace();
         }
-
         return null;
     }
 
