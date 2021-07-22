@@ -31,8 +31,9 @@ static NSString* kFileName = @"";
 -(NSString *)getNumberOfPages:(NSString *)url
 {
     NSURL * sourcePDFUrl = [[NSURL alloc] initFileURLWithPath:url];
-    CGPDFDocumentRef SourcePDFDocument = CGPDFDocumentCreateWithURL((__bridge CFURLRef)sourcePDFUrl);
-    size_t numberOfPages = CGPDFDocumentGetNumberOfPages(SourcePDFDocument);
+    CGPDFDocumentRef sourcePDFDocument = CGPDFDocumentCreateWithURL((__bridge CFURLRef)sourcePDFUrl);
+    size_t numberOfPages = CGPDFDocumentGetNumberOfPages(sourcePDFDocument);
+    CGPDFDocumentRelease(sourcePDFDocument);
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
     NSString *temporaryDirectory = [paths objectAtIndex:0];
     NSString *filePathAndDirectory = [temporaryDirectory stringByAppendingPathComponent:kDirectory];
@@ -63,8 +64,8 @@ static NSString* kFileName = @"";
 -(NSString*)getPage:(NSString *)url ofPage:(size_t)pageNumber
 {
     NSURL * sourcePDFUrl = [[NSURL alloc] initFileURLWithPath:url];
-    CGPDFDocumentRef SourcePDFDocument = CGPDFDocumentCreateWithURL((__bridge CFURLRef)sourcePDFUrl);
-    size_t numberOfPages = CGPDFDocumentGetNumberOfPages(SourcePDFDocument);
+    CGPDFDocumentRef sourcePDFDocument = CGPDFDocumentCreateWithURL((__bridge CFURLRef)sourcePDFUrl);
+    size_t numberOfPages = CGPDFDocumentGetNumberOfPages(sourcePDFDocument);
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
     NSString *temporaryDirectory = [paths objectAtIndex:0];
     NSString *filePathAndDirectory = [temporaryDirectory stringByAppendingPathComponent:kDirectory];
@@ -82,11 +83,11 @@ static NSString* kFileName = @"";
         NSLog(@"Create directory error: %@", error);
         return nil;
     }
-    CGPDFPageRef SourcePDFPage = CGPDFDocumentGetPage(SourcePDFDocument, pageNumber);
-    CGPDFPageRetain(SourcePDFPage);
+    CGPDFPageRef sourcePDFPage = CGPDFDocumentGetPage(sourcePDFDocument, pageNumber);
+    CGPDFPageRetain(sourcePDFPage);
     NSString *relativeOutputFilePath = [NSString stringWithFormat:@"%@/%@-%d.png", kDirectory, kFileName, (int)pageNumber];
     NSString *imageFilePath = [temporaryDirectory stringByAppendingPathComponent:relativeOutputFilePath];
-    CGRect sourceRect = CGPDFPageGetBoxRect(SourcePDFPage, kCGPDFMediaBox);
+    CGRect sourceRect = CGPDFPageGetBoxRect(sourcePDFPage, kCGPDFMediaBox);
     UIGraphicsBeginPDFContextToFile(imageFilePath, sourceRect, nil);
     // Calculate resolution
     // Set DPI to 300
@@ -104,11 +105,13 @@ static NSString* kFileName = @"";
     CGContextTranslateCTM(currentContext, 0.0, height);
     CGContextScaleCTM(currentContext, dpi, -dpi);
     CGContextSaveGState(currentContext);
-    CGContextDrawPDFPage (currentContext, SourcePDFPage);
+    CGContextDrawPDFPage (currentContext, sourcePDFPage);
     CGContextRestoreGState(currentContext);
     UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
     [UIImagePNGRepresentation(image) writeToFile: imageFilePath atomically:YES];
+    CGPDFPageRelease(sourcePDFPage);
+    CGPDFDocumentRelease(sourcePDFDocument);
     return imageFilePath;
 }
 
