@@ -1,7 +1,6 @@
 #import "FlutterPluginPdfViewerPlugin.h"
 
 static NSString* const kDirectory = @"FlutterPluginPdfViewer";
-static NSString* const kFilePath = @"file:///";
 static NSString* kFileName = @"";
 
 @implementation FlutterPluginPdfViewerPlugin
@@ -31,12 +30,7 @@ static NSString* kFileName = @"";
 
 -(NSString *)getNumberOfPages:(NSString *)url
 {
-    NSURL * sourcePDFUrl;
-    if([url containsString:kFilePath]){
-        sourcePDFUrl = [NSURL URLWithString:url];
-    }else{
-        sourcePDFUrl = [NSURL URLWithString:[kFilePath stringByAppendingString:url]];
-    }
+    NSURL * sourcePDFUrl = [[NSURL alloc] initFileURLWithPath:url];
     CGPDFDocumentRef SourcePDFDocument = CGPDFDocumentCreateWithURL((__bridge CFURLRef)sourcePDFUrl);
     size_t numberOfPages = CGPDFDocumentGetNumberOfPages(SourcePDFDocument);
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
@@ -68,12 +62,7 @@ static NSString* kFileName = @"";
 
 -(NSString*)getPage:(NSString *)url ofPage:(size_t)pageNumber
 {
-    NSURL * sourcePDFUrl;
-    if([url containsString:kFilePath]){
-        sourcePDFUrl = [NSURL URLWithString:url];
-    }else{
-        sourcePDFUrl = [NSURL URLWithString:[kFilePath stringByAppendingString:url]];
-    }
+    NSURL * sourcePDFUrl = [[NSURL alloc] initFileURLWithPath:url];
     CGPDFDocumentRef SourcePDFDocument = CGPDFDocumentCreateWithURL((__bridge CFURLRef)sourcePDFUrl);
     size_t numberOfPages = CGPDFDocumentGetNumberOfPages(SourcePDFDocument);
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
