@@ -1,7 +1,7 @@
 name: advance_pdf_viewer
 description: A flutter plugin for handling PDF files. Works on both Android & iOS, forked from https://github.com/lohanidamodar/pdf_viewer to fix compatibility with Flutter 2.2
 version: 2.0.2
-homepage: https://github.com/enveraltin/pdf_viewer
+homepage: https://github.com/lohanidamodar/pdf_viewer
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
