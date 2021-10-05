@@ -3,7 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:numberpicker/numberpicker.dart';
 
 class PagePicker extends StatefulWidget {
-  PagePicker({
+  const PagePicker({
     required this.title,
     required this.maxValue,
     required this.initialValue,
@@ -40,8 +40,8 @@ class _PagePickerState extends State<PagePicker> {
       ),
       actions: [
         TextButton(
-          child: widget.numberPickerConfirmWidget ?? Text('OK'),
           onPressed: () => Navigator.of(context).pop(_currentValue),
+          child: widget.numberPickerConfirmWidget ?? const Text('OK'),
         ),
       ],
     );

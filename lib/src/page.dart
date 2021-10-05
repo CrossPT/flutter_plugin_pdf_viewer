@@ -19,7 +19,7 @@ class PDFPage extends StatefulWidget {
   final double minScale;
   final double maxScale;
   final double panLimit;
-  PDFPage(
+  const PDFPage(
     this.imgPath,
     this.num, {
     this.onZoomChanged,
@@ -50,25 +50,27 @@ class _PDFPageState extends State<PDFPage> {
     }
   }
 
-  _repaint() {
+  void _repaint() {
     provider = FileImage(File(widget.imgPath!));
     final resolver = provider.resolve(createLocalImageConfiguration(context));
-    resolver.addListener(ImageStreamListener((imgInfo, alreadyPainted) {
-      if (!alreadyPainted) setState(() {});
-    }));
+    resolver.addListener(
+      ImageStreamListener(
+        (imgInfo, alreadyPainted) {
+          if (!alreadyPainted) setState(() {});
+        },
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-        decoration: null,
-        child: ZoomableWidget(
-          onZoomChanged: widget.onZoomChanged,
-          zoomSteps: widget.zoomSteps,
-          minScale: widget.minScale,
-          panLimit: widget.panLimit,
-          maxScale: widget.maxScale,
-          child: Image(image: provider),
-        ));
+    return ZoomableWidget(
+      onZoomChanged: widget.onZoomChanged,
+      zoomSteps: widget.zoomSteps,
+      minScale: widget.minScale,
+      panLimit: widget.panLimit,
+      maxScale: widget.maxScale,
+      child: Image(image: provider),
+    );
   }
 }
