@@ -39,30 +39,8 @@ static NSString* kFileName = @"";
     }
     CGPDFDocumentRef SourcePDFDocument = CGPDFDocumentCreateWithURL((__bridge CFURLRef)sourcePDFUrl);
     size_t numberOfPages = CGPDFDocumentGetNumberOfPages(SourcePDFDocument);
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
-    NSString *temporaryDirectory = [paths objectAtIndex:0];
-    NSString *filePathAndDirectory = [temporaryDirectory stringByAppendingPathComponent:kDirectory];
-    NSError *error;
-
-    // Clear cache folder
-    if ([[NSFileManager defaultManager] fileExistsAtPath:filePathAndDirectory]) {
-        NSLog(@"[FlutterPluginPDFViewer] Removing old documents cache");
-        [[NSFileManager defaultManager] removeItemAtPath:filePathAndDirectory error:&error];
-    }
-
-    if (![[NSFileManager defaultManager] createDirectoryAtPath:filePathAndDirectory
-                                   withIntermediateDirectories:YES
-                                                    attributes:nil
-                                                         error:&error])
-    {
-        NSLog(@"Create directory error: %@", error);
-        return nil;
-    }
-    // Generate random file size for this document
-
-    kFileName = [[NSUUID UUID] UUIDString];
+    
     NSLog(@"[FlutterPluginPdfViewer] File has %zd pages", numberOfPages);
-    NSLog(@"[FlutterPluginPdfViewer] File will be saved in cache as %@", kFileName);
     return [NSString stringWithFormat:@"%zd", numberOfPages];
 }
 
