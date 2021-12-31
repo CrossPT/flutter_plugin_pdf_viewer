@@ -1,43 +1,43 @@
 PODS:
-  - Flutter (1.0.0)
-  - flutter_plugin_pdf_viewer (1.0.4):
+  - advance_pdf_viewer (1.0.5):
     - Flutter
+  - Flutter (1.0.0)
   - FMDB (2.7.5):
     - FMDB/standard (= 2.7.5)
   - FMDB/standard (2.7.5)
   - path_provider (0.0.1):
     - Flutter
-  - sqflite (0.0.1):
+  - sqflite (0.0.2):
     - Flutter
-    - FMDB (~> 2.7.2)
+    - FMDB (>= 2.7.5)
 
 DEPENDENCIES:
-  - Flutter (from `.symlinks/flutter/ios`)
-  - flutter_plugin_pdf_viewer (from `.symlinks/plugins/flutter_plugin_pdf_viewer/ios`)
+  - advance_pdf_viewer (from `.symlinks/plugins/advance_pdf_viewer/ios`)
+  - Flutter (from `Flutter`)
   - path_provider (from `.symlinks/plugins/path_provider/ios`)
   - sqflite (from `.symlinks/plugins/sqflite/ios`)
 
 SPEC REPOS:
-  https://github.com/cocoapods/specs.git:
+  trunk:
     - FMDB
 
 EXTERNAL SOURCES:
+  advance_pdf_viewer:
+    :path: ".symlinks/plugins/advance_pdf_viewer/ios"
   Flutter:
-    :path: ".symlinks/flutter/ios"
-  flutter_plugin_pdf_viewer:
-    :path: ".symlinks/plugins/flutter_plugin_pdf_viewer/ios"
+    :path: Flutter
   path_provider:
     :path: ".symlinks/plugins/path_provider/ios"
   sqflite:
     :path: ".symlinks/plugins/sqflite/ios"
 
 SPEC CHECKSUMS:
-  Flutter: 9d0fac939486c9aba2809b7982dfdbb47a7b0296
-  flutter_plugin_pdf_viewer: 17f908f9d9c947bc74df607f323631c9403d8362
+  advance_pdf_viewer: 5c832f382b4ca84fe735f893b7e91aa830c27d7b
+  Flutter: 50d75fe2f02b26cc09d224853bb45737f8b3214a
   FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
-  path_provider: 09407919825bfe3c2deae39453b7a5b44f467873
-  sqflite: d1612813fa7db7c667bed9f1d1b508deffc56999
+  path_provider: abfe2b5c733d04e238b0d8691db0cfd63a27a93c
+  sqflite: 6d358c025f5b867b29ed92fc697fd34924e11904
 
-PODFILE CHECKSUM: aff02bfeed411c636180d6812254b2daeea14d09
+PODFILE CHECKSUM: 8e679eca47255a8ca8067c4c67aab20e64cb974d
 
-COCOAPODS: 1.5.3
+COCOAPODS: 1.11.2
