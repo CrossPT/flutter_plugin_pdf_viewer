@@ -109,20 +109,19 @@ class _PDFViewerState extends State<PDFViewer> {
   }
 
   @override
-  @override
   void didUpdateWidget(PDFViewer oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.document.filePath != widget.document.filePath) {
       _initialize();
+      _isLoading = true;
+      _loadPage();
     }
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _pageNumber = _pageController.initialPage + 1;
-    _isLoading = true;
-    _pages = List.filled(widget.document.count, null);
+    _initialize();
     _loadPage();
   }
 

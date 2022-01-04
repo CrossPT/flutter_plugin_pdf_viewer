@@ -56,7 +56,7 @@ class _PDFPageState extends State<PDFPage> {
     resolver.addListener(
       ImageStreamListener(
         (imgInfo, alreadyPainted) {
-          if (!alreadyPainted) setState(() {});
+          if (!alreadyPainted && mounted) setState(() {});
         },
       ),
     );

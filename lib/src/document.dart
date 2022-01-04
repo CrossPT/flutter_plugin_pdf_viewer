@@ -62,7 +62,7 @@ class PDFDocument {
     File file;
     try {
       final dir = await getApplicationDocumentsDirectory();
-      file = File("${dir.path}/file.pdf");
+      file = File("${dir.path}/${DateTime.now().millisecondsSinceEpoch}.pdf");
       final data = await rootBundle.load(asset);
       final bytes = data.buffer.asUint8List();
       await file.writeAsBytes(bytes, flush: true);
@@ -144,4 +144,14 @@ class PDFDocument {
       );
     }).asStream() as Stream<PDFPage?>;
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is PDFDocument &&
+          runtimeType == other.runtimeType &&
+          _filePath == other._filePath;
+
+  @override
+  int get hashCode => Object.hash(_filePath, count);
 }
