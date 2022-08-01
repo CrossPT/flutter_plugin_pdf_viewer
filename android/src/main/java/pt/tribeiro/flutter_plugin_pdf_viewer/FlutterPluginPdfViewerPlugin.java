@@ -85,7 +85,7 @@ public class FlutterPluginPdfViewerPlugin implements FlutterPlugin, MethodCallHa
                                 if (pageResult == null) {
                                     Log.d(TAG, "Retrieving page failed.");
                                     result.notImplemented();
-                                } else {
+                                }else {
                                     mainThreadHandler.post(new Runnable() {
                                         @Override
                                         public void run() {
@@ -154,12 +154,13 @@ public class FlutterPluginPdfViewerPlugin implements FlutterPlugin, MethodCallHa
     }
 
     private String createTempPreview(Bitmap bmp, String name, int page) {
-        if (context == null) {
+     if (context == null) {
             Log.d(TAG, "createTempPreview: Context is null!");
             return null;
         }
         String fileNameOnly = getFileNameFromPath(name);
         File file;
+        File to;
         try {
             String fileName = String.format(Locale.US, "%s-%d.png", fileNameOnly, page);
             file = File.createTempFile(fileName, null, context.getCacheDir());
@@ -167,11 +168,15 @@ public class FlutterPluginPdfViewerPlugin implements FlutterPlugin, MethodCallHa
             bmp.compress(Bitmap.CompressFormat.PNG, 100, out);
             out.flush();
             out.close();
+            //what you are renaming the file to
+            to = new File(context.getCacheDir(), fileName);
+//            //now rename
+            file.renameTo(to);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
-        return file.getAbsolutePath();
+        return to.getAbsolutePath();
     }
 
     private String getPage(String filePath, @Nullable Integer pageNumber) {
